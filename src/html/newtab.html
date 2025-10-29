@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../assets/icons/icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <title>New Tab</title>
+</head>
+<body>
+    <!-- Settings Button -->
+    <div class="settings-container-top">
+        <button class="settings-trigger-top" id="settingsBtn" title="Settings">
+            <i class="material-icons">settings</i>
+        </button>
+    </div>
+
+    <div class="main-content">
+        <div class="clock" id="clock">00:00:00</div>
+        <div class="date" id="date"></div>
+
+        <form id="searchForm" style="width: 100%; max-width: 600px;">
+            <input
+                type="text"
+                name="q"
+                class="search-box"
+                id="searchBox"
+                placeholder="Search... (type 'g:' for Google)"
+                autocomplete="off"
+                autofocus
+            >
+        </form>
+
+        <div class="tasks-container">
+            <div class="tasks-header">
+                <div class="tasks-title">Tasks</div>
+                <div class="sync-status-minimal" id="syncStatusMinimal">Not synced</div>
+            </div>
+            <input type="text" class="task-input" id="taskInput" placeholder="New task...">
+            <ul class="task-list" id="taskList"></ul>
+        </div>
+    </div>
+
+    <div class="weather-widget" id="weather">
+        <div class="weather-location">Loading...</div>
+    </div>
+
+    <div class="news-ticker">
+        <div class="ticker-content" id="ticker">
+            <span class="ticker-item">Loading news...</span>
+        </div>
+    </div>
+
+    <!-- Settings Popup -->
+    <div class="settings-popup" id="settingsPopup">
+        <div class="settings-header">
+            <h3>Settings</h3>
+            <button class="settings-close" id="settingsClose">
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+
+        <div class="settings-tabs">
+            <button class="tab-btn active" data-tab="general">
+                <i class="material-icons">settings</i>
+                General
+            </button>
+            <button class="tab-btn" data-tab="google">
+                <i class="material-icons">cloud</i>
+                Google
+            </button>
+            <button class="tab-btn" data-tab="news">
+                <i class="material-icons">rss_feed</i>
+                News
+            </button>
+        </div>
+
+        <div class="settings-content">
+            <!-- General Tab -->
+            <div class="tab-content active" id="generalTab">
+                <div class="settings-section">
+                    <h4 class="section-heading">Theme</h4>
+                    <div class="settings-row">
+                        <div class="theme-toggle">
+                            <button class="theme-btn active" data-theme="dark">
+                                <i class="material-icons">dark_mode</i>
+                                Dark
+                            </button>
+                            <button class="theme-btn" data-theme="light">
+                                <i class="material-icons">light_mode</i>
+                                Light
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4 class="section-heading">Storage</h4>
+                    <div class="settings-row">
+                        <div class="storage-info">
+                            <div class="storage-bar">
+                                <div class="storage-used" id="storageBar"></div>
+                            </div>
+                            <div class="storage-text" id="storageText">Loading...</div>
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <button id="clearStorageBtn" class="settings-btn danger">
+                            <i class="material-icons">delete</i>
+                            Clear All Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google Tab -->
+            <div class="tab-content" id="googleTab">
+                <div class="settings-section">
+                    <h4 class="section-heading">Google Tasks Sync</h4>
+                    <div class="settings-row">
+                        <button id="settingsGoogleAuth" class="settings-btn">
+                            <i class="material-icons">account_circle</i>
+                            <span id="authButtonText">Connect</span>
+                        </button>
+                    </div>
+
+                    <div class="settings-row">
+                        <button id="settingsResync" class="settings-btn" disabled>
+                            <i class="material-icons">sync</i>
+                            Sync Now
+                        </button>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="sync-status-text" id="settingsSyncStatus">Not connected</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Tab -->
+            <div class="tab-content" id="newsTab">
+                <div class="settings-section">
+                    <h4 class="section-heading">RSS Feeds</h4>
+                    <div class="settings-row">
+                        <div class="rss-list" id="rssList">
+                            <!-- RSS feeds will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <input type="url" id="newRssUrl" placeholder="Add RSS feed URL" class="rss-input">
+                    </div>
+
+                    <div class="settings-row">
+                        <button id="addRssBtn" class="settings-btn">
+                            <i class="material-icons">add</i>
+                            Add RSS Feed
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credits -->
+        <div class="settings-footer">
+            <div class="credits">
+                <strong>Naveed Ahmed</strong> • <strong>INATIQO Pty Ltd</strong> • <span class="version">v2.0.0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Utility scripts -->
+    <script src="../js/utils/constants.js"></script>
+    <script src="../js/utils/helpers.js"></script>
+
+    <!-- Core modules -->
+    <script src="../js/modules/chrome-storage.js"></script>
+    <script src="../js/modules/google-tasks.js"></script>
+    <script src="../js/modules/sync-manager.js"></script>
+    <script src="../js/modules/task-renderer.js"></script>
+    <script src="../js/modules/weather-module.js"></script>
+    <script src="../js/modules/news-module.js"></script>
+    <script src="../js/modules/settings-module.js"></script>
+
+    <!-- Main application -->
+    <script src="../js/main.js"></script>
+</body>
+</html>

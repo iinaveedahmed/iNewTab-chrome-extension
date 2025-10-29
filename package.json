@@ -1,0 +1,81 @@
+{
+  "name": "custom-new-tab-extension",
+  "version": "2.0.0",
+  "description": "Custom new tab page with Google Tasks integration",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "build": "npm run test && npm run lint",
+    "build:dist": "npm run build && node scripts/build.js",
+    "build:zip": "npm run build:dist && node scripts/package.js",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix",
+    "clean": "rimraf dist",
+    "dev": "npm run build && echo 'Development build complete. Load the project folder in Chrome.'"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.0.0",
+    "eslint": "^8.0.0",
+    "@types/chrome": "^0.0.246",
+    "rimraf": "^5.0.0",
+    "fs-extra": "^11.0.0",
+    "archiver": "^6.0.0",
+    "terser": "^5.0.0",
+    "clean-css": "^5.0.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/**/*.test.js"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ]
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "webextensions": true,
+      "es2021": true,
+      "jest": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 12,
+      "sourceType": "script"
+    },
+    "globals": {
+      "chrome": "readonly",
+      "Utils": "readonly",
+      "Constants": "readonly",
+      "ChromeStorage": "readonly",
+      "GoogleTasksAPI": "readonly",
+      "SyncManager": "readonly",
+      "TaskRenderer": "readonly",
+      "WeatherModule": "readonly",
+      "NewsModule": "readonly",
+      "SettingsModule": "readonly"
+    },
+    "rules": {
+      "no-unused-vars": "warn",
+      "no-console": "off",
+      "indent": ["error", 4],
+      "quotes": ["error", "single"],
+      "semi": ["error", "always"]
+    }
+  },
+  "keywords": [
+    "chrome-extension",
+    "new-tab",
+    "google-tasks",
+    "productivity"
+  ],
+  "author": "Naveed Ahmad",
+  "license": "MIT"
+}
