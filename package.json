@@ -1,7 +1,15 @@
 {
-  "name": "custom-new-tab-extension",
+  "name": "inewtab-chrome-extension",
   "version": "2.0.0",
-  "description": "Custom new tab page with Google Tasks integration",
+  "description": "Beautiful productivity-focused new tab page with smart task management, Google Tasks sync, and customizable widgets",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:iinaveedahmed/iNewTab-chrome-extension.git"
+  },
+  "homepage": "https://github.com/iinaveedahmed/iNewTab-chrome-extension",
+  "bugs": {
+    "url": "https://github.com/iinaveedahmed/iNewTab-chrome-extension/issues"
+  },
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
@@ -73,9 +81,15 @@
   "keywords": [
     "chrome-extension",
     "new-tab",
+    "inewtab",
     "google-tasks",
-    "productivity"
+    "productivity",
+    "task-management",
+    "material-design",
+    "weather-widget",
+    "rss-feeds",
+    "dark-theme"
   ],
-  "author": "Naveed Ahmad",
+  "author": "Naveed Ahmad <naveed@inatiqo.com>",
   "license": "MIT"
 }

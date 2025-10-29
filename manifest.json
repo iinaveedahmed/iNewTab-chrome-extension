@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Custom New Tab with Google Tasks",
-  "version": "2.0",
-  "description": "Custom new tab page with Google Tasks integration",
+  "name": "iNewTab",
+  "version": "2.0.0",
+  "description": "Beautiful productivity-focused new tab page with smart task management, Google Tasks sync, and customizable widgets",
   "chrome_url_overrides": {
     "newtab": "src/html/newtab.html"
   },

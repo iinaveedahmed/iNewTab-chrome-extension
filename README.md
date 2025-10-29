@@ -1,6 +1,13 @@
-# Custom New Tab Extension
+# iNewTab
 
-A modern Chrome extension that replaces the default new tab page with a productivity-focused interface featuring Google Tasks integration, weather updates, and news ticker.
+[![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-brightgreen?style=for-the-badge&logo=googlechrome)](https://github.com/iinaveedahmed/iNewTab-chrome-extension)
+[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Material Design](https://img.shields.io/badge/Material_Design-0081CB?style=for-the-badge&logo=material-design&logoColor=white)](https://material.io/design)
+[![Google Tasks API](https://img.shields.io/badge/Google_Tasks-API-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/tasks)
+[![Jest](https://img.shields.io/badge/Jest-Testing-C21325?style=for-the-badge&logo=jest&logoColor=white)](https://jestjs.io/)
+
+A beautiful, productivity-focused Chrome extension that transforms your new tab page into a smart dashboard with task management, Google Tasks sync, weather updates, and customizable news feeds.
 
 ## Features
 
@@ -51,8 +58,8 @@ A modern Chrome extension that replaces the default new tab page with a producti
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd newTab
+   git clone git@github.com:iinaveedahmed/iNewTab-chrome-extension.git
+   cd iNewTab-chrome-extension
    ```
 
 2. **Install dependencies**
@@ -83,7 +90,7 @@ A modern Chrome extension that replaces the default new tab page with a producti
 ## Project Structure
 
 ```
-newTab/
+iNewTab-chrome-extension/
 ├── src/                          # Source code
 │   ├── css/                      # Stylesheets
 │   │   └── styles.css           # Main styles
