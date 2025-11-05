@@ -39,7 +39,18 @@ class ChromeStorage {
                     }
                 });
             });
-            return result.tasks || [];
+            
+            const tasks = result.tasks || [];
+            
+            // Ensure all tasks have position field (for backward compatibility)
+            tasks.forEach((task, index) => {
+                if (!task.position) {
+                    // Generate position based on current order
+                    task.position = index.toString().padStart(23, '0');
+                }
+            });
+            
+            return tasks;
         } catch (error) {
             console.error('Failed to load tasks:', error);
             return [];
@@ -253,6 +264,46 @@ class ChromeStorage {
             return result.userSettings || null;
         } catch (error) {
             console.error('Failed to load settings:', error);
+            return null;
+        }
+    }
+
+    // Save selected Google task list
+    async saveSelectedTaskList(taskListId) {
+        try {
+            await new Promise((resolve, reject) => {
+                this.storage.set({
+                    'selectedTaskListId': taskListId
+                }, () => {
+                    if (chrome.runtime.lastError) {
+                        reject(chrome.runtime.lastError);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+            return true;
+        } catch (error) {
+            console.error('Failed to save selected task list:', error);
+            return false;
+        }
+    }
+
+    // Load selected Google task list
+    async loadSelectedTaskList() {
+        try {
+            const result = await new Promise((resolve, reject) => {
+                this.storage.get(['selectedTaskListId'], (result) => {
+                    if (chrome.runtime.lastError) {
+                        reject(chrome.runtime.lastError);
+                    } else {
+                        resolve(result);
+                    }
+                });
+            });
+            return result.selectedTaskListId || null;
+        } catch (error) {
+            console.error('Failed to load selected task list:', error);
             return null;
         }
     }

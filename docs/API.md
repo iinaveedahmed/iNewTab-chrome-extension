@@ -21,7 +21,7 @@ await app.init();
 ```
 
 ##### `async createTask(text)`
-Creates a new task with the given text.
+Creates a new task with the given text at the optimal position.
 
 **Parameters:**
 - `text` (string): The task title
@@ -30,6 +30,24 @@ Creates a new task with the given text.
 
 ```javascript
 await app.createTask('New task title');
+```
+
+##### `generateNewTaskPosition()`
+Generates a position string for new tasks using Google Tasks style positioning.
+
+**Returns:** string - Position string
+
+##### `async updateTaskPositions(fromIndex, toIndex)`
+Updates task positions after reordering and syncs to Google Tasks.
+
+**Parameters:**
+- `fromIndex` (number): Original task index
+- `toIndex` (number): New task index
+
+**Returns:** Promise<void>
+
+```javascript
+await app.updateTaskPositions(0, 3);
 ```
 
 ##### `async loadTasks()`
@@ -75,12 +93,29 @@ const success = await storage.saveTasks([
 ```
 
 ##### `async loadTasks()`
-Loads tasks from Chrome storage.
+Loads tasks from Chrome storage and ensures backward compatibility by adding position fields.
 
 **Returns:** Promise<Array> - Array of task objects
 
 ```javascript
 const tasks = await storage.loadTasks();
+```
+
+##### `async saveSelectedTaskList(taskListId)`
+Saves the selected Google Task List ID.
+
+**Parameters:**
+- `taskListId` (string): Google Task List ID
+
+**Returns:** Promise<boolean> - Success status
+
+##### `async loadSelectedTaskList()`
+Loads the selected Google Task List ID.
+
+**Returns:** Promise<string|null> - Task List ID or null
+
+```javascript
+const taskListId = await storage.loadSelectedTaskList();
 ```
 
 ##### `async saveAuthStatus(isAuthenticated)`
@@ -141,9 +176,32 @@ const api = new GoogleTasksAPI();
 #### Properties
 - `isAuthenticated` (boolean): Current authentication status
 - `accessToken` (string): Current OAuth access token
-- `taskListId` (string): ID of the default task list
+- `taskListId` (string): ID of the currently selected task list
+- `availableTaskLists` (Array): Array of available task lists
 
 #### Methods
+
+##### `async getAllTaskLists()`
+Fetches all available Google Task Lists for the authenticated user.
+
+**Returns:** Promise<Array> - Array of task list objects
+
+```javascript
+const taskLists = await api.getAllTaskLists();
+// Returns: [{ id: 'list-id', title: 'My Tasks' }, ...]
+```
+
+##### `setTaskList(taskListId)`
+Sets the active task list for all operations.
+
+**Parameters:**
+- `taskListId` (string): Google Task List ID
+
+**Returns:** void
+
+```javascript
+api.setTaskList('new-task-list-id');
+```
 
 ##### `async authenticate()`
 Initiates OAuth flow and authenticates with Google Tasks.
@@ -202,13 +260,35 @@ Deletes a task from Google Tasks.
 
 **Returns:** Promise<boolean> - Success status
 
+##### `async moveTask(taskId, parent, previous)`
+Moves a task to a new position in Google Tasks using the native move API.
+
+**Parameters:**
+- `taskId` (string): Google Tasks ID of the task to move
+- `parent` (string|null): Parent task ID for subtasks, null for root tasks
+- `previous` (string|null): ID of the task that should come before this task
+
+**Returns:** Promise<Object> - Updated task from Google API
+
+```javascript
+// Move task to be after another task
+await api.moveTask('task-id', null, 'previous-task-id');
+
+// Move task to top of list
+await api.moveTask('task-id', null, null);
+```
+
 ##### `convertGoogleTasksToLocal(googleTasks)`
-Converts Google Tasks format to local task format.
+Converts Google Tasks format to local task format, preserving position information.
 
 **Parameters:**
 - `googleTasks` (Array): Tasks from Google Tasks API
 
-**Returns:** Array - Tasks in local format
+**Returns:** Array - Tasks in local format with position fields
+
+```javascript
+const localTasks = api.convertGoogleTasksToLocal(googleApiTasks);
+```
 
 ##### `async checkAuthStatus()`
 Checks if the current authentication is still valid.
@@ -294,7 +374,7 @@ Gets current sync status and statistics.
 
 ### TaskRenderer
 
-Handles rendering and UI interactions for tasks.
+Handles rendering and UI interactions for tasks, including completed tasks management and drag-drop positioning.
 
 #### Constructor
 ```javascript
@@ -304,7 +384,21 @@ const renderer = new TaskRenderer(tasks, app);
 #### Methods
 
 ##### `render()`
-Renders all tasks in the task list with event listeners.
+Renders all tasks separated into active and completed sections with event listeners.
+
+**Returns:** void
+
+##### `async handleTaskDrop(e, li)`
+Handles task reordering via drag and drop, updates positions, and syncs to Google Tasks.
+
+**Parameters:**
+- `e` (Event): Drop event
+- `li` (HTMLElement): Target list item element
+
+**Returns:** Promise<void>
+
+##### `setupCompletedTasksToggle()`
+Sets up the collapsible completed tasks section functionality.
 
 **Returns:** void
 
@@ -481,7 +575,8 @@ Creates a deep copy of an object.
     description: string,  // Task description/notes
     dueDate: string,     // ISO date string or null
     googleId: string,    // Google Tasks ID or null
-    createdAt: string    // ISO timestamp
+    createdAt: string,   // ISO timestamp
+    position: string     // Google Tasks position string for ordering
 }
 ```
 

@@ -31,33 +31,50 @@ describe('TaskRenderer', () => {
     });
 
     describe('render', () => {
-        it('should render tasks in the task list', () => {
+        it('should render active tasks in the main task list', () => {
             const taskList = document.getElementById('taskList');
+            const completedSection = document.getElementById('completedTasksSection');
             renderer.render();
 
-            expect(taskList.children).toHaveLength(2);
+            // Should only show active tasks in main list
+            expect(taskList.children).toHaveLength(1);
             expect(taskList.innerHTML).toContain('Test task 1');
-            expect(taskList.innerHTML).toContain('Test task 2');
+            expect(taskList.innerHTML).not.toContain('Test task 2');
+            
+            // Completed tasks section should be visible
+            expect(completedSection.style.display).toBe('block');
         });
 
-        it('should sort completed tasks to bottom', () => {
+        it('should separate active and completed tasks', () => {
             const taskList = document.getElementById('taskList');
+            const completedList = document.getElementById('completedTaskList');
+            const completedCount = document.getElementById('completedTasksCount');
             renderer.render();
 
-            const firstTask = taskList.children[0];
-            const secondTask = taskList.children[1];
+            // Main list should have active task
+            expect(taskList.children).toHaveLength(1);
+            const activeTask = taskList.children[0];
+            expect(activeTask.querySelector('.task-text').textContent).toBe('Test task 1');
+            expect(activeTask.querySelector('.checkbox').checked).toBe(false);
 
-            expect(firstTask.querySelector('.task-text').textContent).toBe('Test task 1');
-            expect(secondTask.querySelector('.task-text').textContent).toBe('Test task 2');
-            expect(secondTask.querySelector('.checkbox').checked).toBe(true);
+            // Completed list should have completed task
+            expect(completedList.children).toHaveLength(1);
+            const completedTask = completedList.children[0];
+            expect(completedTask.querySelector('.task-text').textContent).toBe('Test task 2');
+            expect(completedTask.querySelector('.checkbox').checked).toBe(true);
+            
+            // Count should be correct
+            expect(completedCount.textContent).toBe('(1)');
         });
 
         it('should handle empty task list', () => {
             renderer.tasks = [];
             const taskList = document.getElementById('taskList');
+            const completedSection = document.getElementById('completedTasksSection');
             renderer.render();
 
             expect(taskList.children).toHaveLength(0);
+            expect(completedSection.style.display).toBe('none');
         });
     });
 

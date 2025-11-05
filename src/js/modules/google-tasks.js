@@ -5,6 +5,7 @@ class GoogleTasksAPI {
         this.isAuthenticated = false;
         this.accessToken = null;
         this.taskListId = null; // Default task list ID
+        this.availableTaskLists = [];
     }
 
     // Authenticate with Google Tasks API
@@ -23,8 +24,11 @@ class GoogleTasksAPI {
             this.accessToken = token;
             this.isAuthenticated = true;
 
-            // Get default task list
-            await this.getDefaultTaskList();
+            // Get all task lists and set default
+            await this.getAllTaskLists();
+            if (this.availableTaskLists.length > 0) {
+                this.taskListId = this.availableTaskLists[0].id;
+            }
 
             return true;
         } catch (error) {
@@ -45,6 +49,29 @@ class GoogleTasksAPI {
         this.taskListId = null;
     }
 
+    // Get all available task lists
+    async getAllTaskLists() {
+        try {
+            const response = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            });
+
+            const data = await response.json();
+            if (data.items && data.items.length > 0) {
+                this.availableTaskLists = data.items.map(list => ({
+                    id: list.id,
+                    title: list.title
+                }));
+                return this.availableTaskLists;
+            }
+        } catch (error) {
+            console.error('Failed to get task lists:', error);
+        }
+        return [];
+    }
+
     // Get default task list
     async getDefaultTaskList() {
         try {
@@ -56,6 +83,10 @@ class GoogleTasksAPI {
 
             const data = await response.json();
             if (data.items && data.items.length > 0) {
+                this.availableTaskLists = data.items.map(list => ({
+                    id: list.id,
+                    title: list.title
+                }));
                 this.taskListId = data.items[0].id; // Use the first (default) task list
                 return this.taskListId;
             }
@@ -63,6 +94,11 @@ class GoogleTasksAPI {
             console.error('Failed to get task lists:', error);
         }
         return null;
+    }
+
+    // Set active task list
+    setTaskList(taskListId) {
+        this.taskListId = taskListId;
     }
 
     // Get all tasks from Google Tasks
@@ -201,6 +237,45 @@ class GoogleTasksAPI {
         }
     }
 
+    // Move a task to a new position in Google Tasks
+    async moveTask(taskId, parent = null, previous = null) {
+        if (!this.isAuthenticated || !this.taskListId) {
+            throw new Error('Not authenticated or no task list');
+        }
+
+        try {
+            let url = `https://www.googleapis.com/tasks/v1/lists/${this.taskListId}/tasks/${taskId}/move`;
+            const params = new URLSearchParams();
+            
+            if (parent) {
+                params.append('parent', parent);
+            }
+            if (previous) {
+                params.append('previous', previous);
+            }
+            
+            if (params.toString()) {
+                url += '?' + params.toString();
+            }
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Move task failed: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to move task:', error);
+            throw error;
+        }
+    }
+
     // Delete a task
     async deleteTask(taskId) {
         if (!this.isAuthenticated || !this.taskListId) {
@@ -229,7 +304,7 @@ class GoogleTasksAPI {
         const taskMap = new Map();
         const parentTasks = [];
 
-        // First pass: create all tasks
+        // First pass: create all tasks with position preserved
         googleTasks.forEach(gTask => {
             const localTask = {
                 id: gTask.id,
@@ -239,7 +314,9 @@ class GoogleTasksAPI {
                 googleId: gTask.id,
                 parent: gTask.parent || null,
                 description: gTask.notes || '',
-                dueDate: gTask.due ? new Date(gTask.due).toISOString().split('T')[0] : null
+                dueDate: gTask.due ? new Date(gTask.due).toISOString().split('T')[0] : null,
+                position: gTask.position || '0', // Preserve Google's position
+                createdAt: gTask.updated || new Date().toISOString() // Use Google's updated time
             };
             taskMap.set(gTask.id, localTask);
 
@@ -318,7 +395,10 @@ class GoogleTasksAPI {
             if (token) {
                 this.accessToken = token;
                 this.isAuthenticated = true;
-                await this.getDefaultTaskList();
+                await this.getAllTaskLists();
+                if (this.availableTaskLists.length > 0) {
+                    this.taskListId = this.availableTaskLists[0].id;
+                }
                 return true;
             }
             return false;

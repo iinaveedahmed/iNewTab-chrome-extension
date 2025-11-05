@@ -7,7 +7,7 @@
 [![Google Tasks API](https://img.shields.io/badge/Google_Tasks-API-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/tasks)
 [![Jest](https://img.shields.io/badge/Jest-Testing-C21325?style=for-the-badge&logo=jest&logoColor=white)](https://jestjs.io/)
 
-A beautiful, productivity-focused Chrome extension that transforms your new tab page into a smart dashboard with task management, Google Tasks sync, weather updates, and customizable news feeds.
+A beautiful, productivity-focused Chrome extension that transforms your new tab page into a smart dashboard with advanced task management, Google Tasks sync with multi-list support, weather updates, and customizable news feeds.
 
 ## Features
 
@@ -19,15 +19,23 @@ A beautiful, productivity-focused Chrome extension that transforms your new tab 
 - Google Fonts (Inter) and Material Icons
 
 📋 **Enhanced Task Management**
-- **Smart Due Date Sorting** - Tasks automatically sorted by urgency
-- **Visual Urgency Indicators** - Red borders for tasks due within 3 days
+- **Google Tasks Native Sorting** - Uses same ordering logic as Google Tasks
+- **Multi-Task List Support** - Switch between different Google Task Lists
+- **Completed Tasks Management** - Collapsible section for completed tasks
+- **Position Syncing** - Drag & drop order syncs back to Google Tasks
+- **Smart Task Placement** - New tasks appear at top, respecting due dates
+- **Visual Urgency Indicators** - Clear priority system for due dates
 - **Hidden Actions** - Clean interface with actions appearing on hover
 - **Comprehensive Tooltips** - Hover for detailed task information
 - Hierarchical subtasks with drag-and-drop reordering
 - Task completion animations
 
 ☁️ **Google Tasks Integration**
-- Bidirectional synchronization with Google Tasks
+- **Multi-List Support** - Select and switch between different Google Task Lists
+- **Bidirectional synchronization** with position/order syncing
+- **Real-time Sync Status** - Shows last sync time and connection status
+- **Force Task List Switching** - Clears local tasks and downloads from selected list
+- **Native Ordering** - Respects Google Tasks' position-based sorting
 - OAuth 2.0 authentication
 - Automatic background sync every 5 minutes
 - Offline support with Chrome storage
@@ -209,12 +217,15 @@ const tasks = await storage.loadTasks();
 ```
 
 #### `GoogleTasksAPI`
-Google Tasks API integration with OAuth authentication.
+Google Tasks API integration with OAuth authentication and multi-list support.
 
 ```javascript
 const api = new GoogleTasksAPI();
 await api.authenticate();
+const taskLists = await api.getAllTaskLists();
+api.setTaskList('list-id');
 const tasks = await api.getTasks();
+await api.moveTask('task-id', null, 'previous-task-id');
 ```
 
 #### `TaskRenderer`
@@ -287,6 +298,19 @@ const debouncedSave = Utils.debounce(saveFunction, 300);
 2. Verify Google Tasks API permissions
 3. Try manual sync button
 4. Check browser console for errors
+5. Verify correct task list is selected
+
+#### Task List Not Switching
+1. Ensure you're authenticated with Google
+2. Check task list dropdown shows available lists
+3. Try disconnecting and reconnecting Google account
+4. Verify task list selection is saved in settings
+
+#### Completed Tasks Not Hiding
+1. Check completed tasks toggle button functionality
+2. Verify tasks are marked as completed properly
+3. Try refreshing the extension
+4. Check task rendering logic in console
 
 #### Extension Not Loading
 1. Verify `manifest.json` syntax
@@ -322,6 +346,16 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [Inter Font](https://fonts.google.com/specimen/Inter)
 
 ## Changelog
+
+### Version 2.1.0
+- **Google Task List Selection** - Choose which Google Task List to display
+- **Completed Tasks Management** - Collapsible section for completed tasks
+- **Google Tasks Native Sorting** - Uses same ordering logic as Google Tasks
+- **Position Syncing** - Drag & drop order syncs back to Google Tasks
+- **Real-time Sync Status** - Shows accurate last sync timestamps
+- **Force Download on List Switch** - Ensures clean task list switching
+- Enhanced task creation positioning (new tasks at top)
+- Improved error handling and user feedback
 
 ### Version 2.0.0
 - **Tabbed Settings Interface** with General, Google, and News sections

@@ -54,9 +54,9 @@ class SyncManager {
             // Save merged tasks locally
             await this.storage.saveTasks(mergedTasks);
 
-            // Update sync status
-            await this.storage.saveSyncStatus('success');
+            // Update sync status with timestamp
             this.lastSyncTime = new Date();
+            await this.storage.saveSyncStatus('success');
 
             console.log('Sync completed successfully');
             return mergedTasks;

@@ -1,96 +1,220 @@
-# Custom New Tab Chrome Extension - AI Coding Guidelines
+# iNewTab Chrome Extension - AI Coding Guidelines
 
 ## Project Overview
-This is a Chrome extension that replaces the default new tab page with a custom dashboard featuring clock, search, tasks, weather, and news ticker. Built with vanilla JavaScript, no frameworks.
+A modular Chrome extension that replaces the default new tab page with a productivity dashboard featuring Google Tasks sync with multi-list support, smart search, weather, news, and customizable settings. Built with vanilla JavaScript using class-based modules and Chrome Extension Manifest v3.
+
+**Key Features:**
+- **Google Tasks Integration**: Full bidirectional sync with multiple task list support
+- **Smart Task Management**: Position-based ordering matching Google Tasks native behavior
+- **Completed Tasks Management**: Collapsible completed tasks section
+- **Real-time Sync**: Order changes sync back to Google Tasks instantly
+- **Task List Selection**: Choose which Google Task List to display and sync
+- **Last Sync Display**: Shows accurate last sync timestamps
 
 ## Architecture & Key Components
 
-### Core Structure
-- `manifest.json` - Chrome extension manifest (v3) with new tab override and storage permissions
-- `newtab.html` - Single-page dashboard with embedded CSS styling (dark theme)
-- `script.js` - All functionality in one file with modular sections
+### Modular Structure
+```
+src/
+├── html/newtab.html          # Main HTML with external CSS
+├── css/styles.css            # Centralized styling with CSS variables
+├── js/
+│   ├── main.js              # NewTabApp coordination class
+│   ├── modules/             # Feature modules (class-based)
+│   │   ├── chrome-storage.js    # Chrome storage wrapper
+│   │   ├── google-tasks.js      # Google Tasks API client
+│   │   ├── sync-manager.js      # Bidirectional sync logic
+│   │   ├── task-renderer.js     # Task UI rendering
+│   │   ├── settings-module.js   # Tabbed settings interface
+│   │   ├── weather-module.js    # Weather widget
+│   │   └── news-module.js       # RSS news ticker
+│   └── utils/
+│       ├── constants.js         # Centralized config
+│       └── helpers.js          # Utility functions
+```
 
-### Component Boundaries
-1. **Clock/Date** - Simple time display with 12-hour format
-2. **Search** - Dual search (Perplexity default, Google with `g:` prefix)
-3. **Task Manager** - Hierarchical tasks with subtasks, drag-drop, localStorage persistence
-4. **Weather** - Geolocation-based weather via Open-Meteo API
-5. **News Ticker** - RSS feeds via rss2json.com with caching and hourly updates
+### Core Classes & Responsibilities
+- **`NewTabApp`** - Main coordinator in `main.js`, initializes all modules
+- **`ChromeStorage`** - Promise-based Chrome storage wrapper with typed methods
+- **`GoogleTasksAPI`** - OAuth authentication + Google Tasks API client with multi-list support
+- **`SyncManager`** - Bidirectional sync between local/Google tasks with conflict resolution
+- **`TaskRenderer`** - DOM manipulation for task UI with event delegation and completed tasks management
+- **`SettingsModule`** - Modal settings with tabbed interface (General/Google/News) and task list selection
+
+### New API Methods
+- **`GoogleTasksAPI.getAllTaskLists()`** - Fetches all available Google Task Lists
+- **`GoogleTasksAPI.setTaskList(id)`** - Sets active task list for operations
+- **`GoogleTasksAPI.moveTask(taskId, parent, previous)`** - Moves task position in Google Tasks
+- **`ChromeStorage.saveSelectedTaskList(id)`** - Persists selected task list
+- **`NewTabApp.updateTaskPositions(from, to)`** - Updates task positions and syncs to Google
 
 ## Critical Patterns
 
-### Error Handling
-All operations wrapped in `safe()` function - use this pattern for any new code:
+### Module Communication
+All modules communicate through the main `NewTabApp` instance:
 ```javascript
-function safe(fn) {
-    try { return fn(); } 
-    catch (e) { console.error(e); return null; }
+// In main.js
+class NewTabApp {
+    constructor() {
+        this.storage = new ChromeStorage();
+        this.googleAPI = new GoogleTasksAPI();
+        this.syncManager = new SyncManager(this.googleAPI, this.storage);
+        // ...
+    }
 }
 ```
 
+### Error Handling
+Use `Utils.safe()` wrapper from `helpers.js` for all operations:
+```javascript
+Utils.safe(() => {
+    // Any operation that might throw
+});
+```
+
 ### Data Persistence
-- Tasks: `localStorage` with JSON serialization via `saveTasks()`
-- News: Cached hourly with timestamp in `cachedNews` and `lastNewsUpdate`
-- Always use `safe()` wrapper for localStorage operations
+- **Chrome Storage API** (not localStorage) via `ChromeStorage` class
+- Tasks include Google sync metadata: `{ id, text, done, subs, googleId, createdAt, dueDate, position }`
+- Settings stored separately with RSS feeds, selected task list, and user preferences
+- **Task List Selection**: Saved per user, persists across sessions
+- **Position Management**: Uses Google Tasks native position strings for ordering
 
-### Event Management
-- Tasks use **event delegation** pattern - all event listeners attached after DOM manipulation
-- Drag-drop implemented with native HTML5 API on both tasks and subtasks
-- News ticker links use data attributes + post-render event binding
+### Task Management Patterns
+- **Completed Tasks**: Separated into collapsible section, hidden by default
+- **Task Ordering**: Uses Google Tasks native position-based sorting
+- **New Task Placement**: Added at top using position calculation (Google Tasks behavior)
+- **Drag & Drop**: Updates positions locally and syncs to Google Tasks via move API
+- **Task List Switching**: Clears local tasks, force downloads from selected Google Task List
 
-### API Integration
-- **Weather**: Open-Meteo (no key required) + BigDataCloud for location names
-- **News**: RSS feeds via rss2json.com proxy service
-- **Error fallbacks**: All external APIs have graceful degradation messages
+### Async Patterns
+All Chrome API operations use Promise wrappers:
+```javascript
+// ChromeStorage methods return promises
+await this.storage.saveTasks(tasks);
+const tasks = await this.storage.loadTasks();
+```
 
 ## Development Workflows
 
-### Testing Extension
-1. Open Chrome → Extensions → Developer mode → Load unpacked
-2. Point to project root directory
-3. Open new tab to test changes
-4. Use DevTools console to debug `safe()` wrapped errors
+### Building & Testing
+```bash
+npm test                # Jest tests with Chrome API mocks
+npm run build          # Lint + test
+npm run build:dist     # Minified production build
+npm run dev            # Development build
+```
 
-### Key Files for Changes
-- **UI/Styling**: Modify embedded CSS in `newtab.html` (no external stylesheets)
-- **Functionality**: All logic in `script.js` with clear comment sections
-- **Extension config**: `manifest.json` for permissions/icons
+### Chrome Extension Testing
+1. `npm run dev` to build
+2. Chrome → Extensions → Load unpacked → point to project root
+3. Check console in DevTools for module loading errors
+4. Test Google OAuth in incognito for clean auth state
 
-### Performance Considerations
-- RSS updates: 1 hour intervals (avoid API rate limits)
-- Weather updates: 10 minutes
-- Time updates: 1 second for clock, 1 minute for "time ago" displays
-- Task operations: Immediate localStorage saves with debouncing
+### Key Configuration
+- **Constants** in `src/js/utils/constants.js` - API URLs, intervals, error messages
+- **RSS feeds** configurable through settings UI, stored in Chrome storage
+- **OAuth client ID** in `manifest.json` for Google Tasks integration
 
 ## Code Conventions
 
-### Naming
-- Functions: camelCase (`updateClock`, `loadWeather`)
-- Variables: camelCase with descriptive names (`cachedNews`, `lastNewsUpdate`)
-- DOM IDs: kebab-case in HTML, camelCase in JS (`task-list` → `taskList`)
-
-### Data Structures
+### Class Structure
 ```javascript
-// Task format
-{ text: string, done: boolean, subs: Array<{text: string, done: boolean}> }
-
-// Cached news format  
-{ title: string, link: string }
+class ModuleName {
+    constructor(dependencies) {
+        this.dependency = dependencies;
+        this.state = {};
+    }
+    
+    async init() {
+        // Initialization logic
+    }
+    
+    // Public methods
+    // Private methods with underscore prefix
+}
 ```
 
-### DOM Manipulation
-- Prefer `innerHTML` for bulk updates with post-render event binding
-- Use `dataset` attributes for passing data to event handlers
-- All external links must open in new tabs (`_blank`)
+### Naming & Organization
+- **Classes**: PascalCase (`SyncManager`, `TaskRenderer`)
+- **Methods**: camelCase (`updateSyncUI`, `renderTasks`)
+- **Constants**: UPPER_SNAKE_CASE in `constants.js`
+- **Module exports**: Attach to `window` object (`window.ChromeStorage = ChromeStorage`)
+
+### Task Data Structure
+```javascript
+{
+    id: string,           // Local UUID
+    text: string,         // Task title
+    done: boolean,        // Completion status
+    subs: Array,          // Subtasks array
+    googleId: string,     // Google Tasks ID for sync
+    dueDate: string,      // ISO date string
+    createdAt: string,    // ISO timestamp
+    description: string,  // Task notes
+    position: string      // Google Tasks position for ordering
+}
+```
 
 ## Extension-Specific Notes
-- Manifest v3 requires service workers (not used here - all client-side)
-- Storage permission allows unlimited localStorage usage
-- No external script loading - all code must be inline or in local files
-- Icons referenced in manifest must exist in project root
+
+### Chrome APIs Used
+- `chrome.storage.local` - Persistent data storage
+- `chrome.identity` - OAuth 2.0 authentication with Google
+- **Permissions**: `storage`, `identity`, host permissions for Google APIs
+
+### Security & OAuth
+- OAuth client ID in `manifest.json` must match Google Cloud Console
+- Scopes: `https://www.googleapis.com/auth/tasks`
+- Token management handled by `GoogleTasksAPI` class
+
+### Performance Considerations
+- Auto-sync every 5 minutes when authenticated (configurable in `constants.js`)
+- News updates hourly with caching
+- Weather updates every 10 minutes
+- Debounced user input to prevent API spam
+
+## Testing Patterns
+
+### Jest Configuration
+- **Setup**: `tests/setup.js` mocks Chrome APIs, creates DOM structure
+- **Mocks**: Chrome storage, identity APIs, fetch, geolocation
+- **Helpers**: `createMockTask()`, `createMockResponse()` for consistent test data
+
+### Common Test Patterns
+```javascript
+// Test Chrome storage operations
+await storage.saveTasks([mockTask]);
+expect(chrome.storage.local.set).toHaveBeenCalled();
+
+// Test async module initialization  
+await module.init();
+expect(module.isInitialized).toBe(true);
+```
 
 ## Common Debugging
-- Check browser console for `safe()` caught errors
-- Verify localStorage state in DevTools Application tab
-- Test RSS feed URLs directly in rss2json.com for API issues
-- Use Chrome extension DevTools for manifest validation
+
+### Chrome Extension Issues
+- **Console errors**: Check all modules load correctly in DevTools
+- **Storage state**: Application tab → Storage → Local storage
+- **OAuth failures**: Clear tokens in Chrome → Settings → Privacy → Clear browsing data
+- **Sync conflicts**: Check `SyncManager.syncInProgress` state
+
+### API Integration
+- **Google Tasks**: Verify OAuth scopes and client ID match
+- **Multiple Task Lists**: Check task list selection is saved and loaded correctly
+- **Position Syncing**: Verify moveTask API calls and position updates
+- **Completed Tasks**: Ensure proper separation and toggle functionality
+- **Weather/News**: Network tab to check API responses and CORS
+- **Rate limiting**: Configured intervals in `constants.js`
+
+### New Feature Debugging
+- **Task List Selection**: Check dropdown population and saved selection in storage
+- **Position Syncing**: Monitor console for moveTask API calls and position updates
+- **Completed Tasks**: Verify toggle functionality and proper task separation
+- **Last Sync Time**: Check sync timestamp display and storage
+- **Force Download**: Ensure task list switching clears old tasks properly
+
+### Build Issues
+- **Missing modules**: Ensure all classes export to `window` object
+- **Manifest errors**: Validate JSON and check file paths
+- **Distribution**: Use `npm run build:dist` for production builds with minification

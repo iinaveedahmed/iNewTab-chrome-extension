@@ -97,6 +97,12 @@ class SettingsModule {
         if (clearBtn) {
             clearBtn.addEventListener('click', () => this.handleClearStorage());
         }
+
+        // Task list selection
+        const taskListSelect = document.getElementById('taskListSelect');
+        if (taskListSelect) {
+            taskListSelect.addEventListener('change', (e) => this.handleTaskListChange(e.target.value));
+        }
     }
 
     /**
@@ -331,21 +337,120 @@ class SettingsModule {
         const authText = document.getElementById('authButtonText');
         const resyncBtn = document.getElementById('settingsResync');
         const statusText = document.getElementById('settingsSyncStatus');
+        const taskListRow = document.getElementById('taskListSelectionRow');
 
         if (this.app.googleAPI.isAuthenticated) {
             if (authText) authText.textContent = 'Disconnect Google';
             if (resyncBtn) resyncBtn.disabled = false;
+            if (taskListRow) taskListRow.style.display = 'block';
+            
+            // Show last sync time if available
+            const lastSync = this.app.syncManager.lastSyncTime;
+            let statusMessage = 'Connected to Google Tasks';
+            if (lastSync) {
+                const timeAgo = Utils.getTimeAgo(lastSync);
+                statusMessage += ` • Last synced ${timeAgo}`;
+            }
+            
             if (statusText) {
-                statusText.textContent = 'Connected to Google Tasks';
+                statusText.textContent = statusMessage;
                 statusText.className = 'sync-status-text success';
             }
+            
+            // Update task list dropdown
+            this.updateTaskListDropdown();
         } else {
             if (authText) authText.textContent = 'Connect Google';
             if (resyncBtn) resyncBtn.disabled = true;
+            if (taskListRow) taskListRow.style.display = 'none';
             if (statusText) {
                 statusText.textContent = 'Not connected';
                 statusText.className = 'sync-status-text';
             }
+        }
+    }
+
+    /**
+     * Update task list dropdown
+     */
+    async updateTaskListDropdown() {
+        const taskListSelect = document.getElementById('taskListSelect');
+        if (!taskListSelect || !this.app.googleAPI.isAuthenticated) return;
+
+        // Clear existing options
+        taskListSelect.innerHTML = '<option value="">Loading...</option>';
+
+        try {
+            const taskLists = await this.app.googleAPI.getAllTaskLists();
+            taskListSelect.innerHTML = '';
+
+            if (taskLists.length === 0) {
+                taskListSelect.innerHTML = '<option value="">No task lists found</option>';
+                return;
+            }
+
+            // Add options for each task list
+            taskLists.forEach(list => {
+                const option = document.createElement('option');
+                option.value = list.id;
+                option.textContent = list.title;
+                taskListSelect.appendChild(option);
+            });
+
+            // Set selected value from storage
+            const selectedTaskListId = await this.app.storage.loadSelectedTaskList();
+            if (selectedTaskListId) {
+                taskListSelect.value = selectedTaskListId;
+                this.app.googleAPI.setTaskList(selectedTaskListId);
+            } else if (taskLists.length > 0) {
+                // Default to first task list
+                taskListSelect.value = taskLists[0].id;
+                this.app.googleAPI.setTaskList(taskLists[0].id);
+                await this.app.storage.saveSelectedTaskList(taskLists[0].id);
+            }
+        } catch (error) {
+            console.error('Failed to load task lists:', error);
+            taskListSelect.innerHTML = '<option value="">Error loading task lists</option>';
+        }
+    }
+
+    /**
+     * Handle task list selection change
+     */
+    async handleTaskListChange(taskListId) {
+        if (!taskListId) return;
+
+        try {
+            // Save selection to storage
+            await this.app.storage.saveSelectedTaskList(taskListId);
+            
+            // Update Google API
+            this.app.googleAPI.setTaskList(taskListId);
+            
+            // Show loading state
+            this.showSyncStatus('Switching task list...', '');
+            
+            // Clear all local tasks first to ensure clean switch
+            this.app.tasks = [];
+            this.app.renderTasks();
+            await this.app.saveTasks();
+            
+            // Force download tasks from the new task list only
+            const newTasks = await this.app.syncManager.forceDownloadFromGoogle();
+            if (newTasks) {
+                this.app.tasks = newTasks;
+                this.app.renderTasks();
+                this.showSyncStatus('Task list switched successfully', 'success');
+            } else {
+                this.showSyncStatus('Failed to load tasks from new list', 'error');
+            }
+            
+            // Update main sync UI
+            this.app.updateSyncUI();
+            
+        } catch (error) {
+            console.error('Failed to update task list:', error);
+            this.showSyncStatus('Failed to update task list', 'error');
         }
     }
 

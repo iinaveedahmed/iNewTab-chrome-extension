@@ -104,6 +104,29 @@ class NewTabApp {
         if (authStatus.isAuthenticated) {
             const isStillAuth = await this.googleAPI.checkAuthStatus();
             if (isStillAuth) {
+                // Load saved task list selection
+                const selectedTaskListId = await this.storage.loadSelectedTaskList();
+                if (selectedTaskListId && this.googleAPI.availableTaskLists.find(list => list.id === selectedTaskListId)) {
+                    this.googleAPI.setTaskList(selectedTaskListId);
+                }
+                
+                // Load last sync time
+                const syncStatus = await this.storage.loadSyncStatus();
+                if (syncStatus.lastSyncTime) {
+                    this.syncManager.lastSyncTime = new Date(syncStatus.lastSyncTime);
+                }
+                
+                // Perform initial sync to load tasks from the selected task list
+                try {
+                    const mergedTasks = await this.syncManager.syncTasks();
+                    if (mergedTasks) {
+                        this.tasks = mergedTasks;
+                        this.renderTasks();
+                    }
+                } catch (error) {
+                    console.error('Initial sync failed:', error);
+                }
+                
                 this.updateSyncUI();
                 this.syncManager.startAutoSync();
             } else {
@@ -284,10 +307,12 @@ class NewTabApp {
             subs: [],
             description: '',
             dueDate: null,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            position: this.generateNewTaskPosition()
         };
 
-        this.tasks.push(newTask);
+        // Add task at the beginning of the array (Google Tasks behavior)
+        this.tasks.unshift(newTask);
 
         // If authenticated, push to Google as well
         if (this.googleAPI.isAuthenticated) {
@@ -296,6 +321,100 @@ class NewTabApp {
 
         await this.saveTasks();
         this.renderTasks();
+    }
+
+    /**
+     * Generate position for new task (Google Tasks style)
+     * New tasks get position that puts them at the top
+     */
+    generateNewTaskPosition() {
+        // Find the smallest position among existing incomplete tasks
+        const incompleteTasks = this.tasks.filter(task => !task.done);
+        if (incompleteTasks.length === 0) {
+            return '00000000000000000000000'; // Default position for first task
+        }
+        
+        const minPosition = incompleteTasks.reduce((min, task) => {
+            const pos = task.position || '99999999999999999999999';
+            return pos < min ? pos : min;
+        }, '99999999999999999999999');
+        
+        // Generate a position that's smaller (comes before) the current minimum
+        const newPos = (parseInt(minPosition.substring(0, 10), 36) - 1).toString(36).padStart(10, '0');
+        return newPos + '0000000000000';
+    }
+
+    /**
+     * Update task positions after reordering and sync to Google Tasks
+     */
+    async updateTaskPositions(fromIndex, toIndex) {
+        if (fromIndex === toIndex) return;
+
+        // Get the active (incomplete) tasks that are visible and can be reordered
+        const activeTasks = this.tasks.filter(task => !task.done);
+        
+        // Find the task that was moved
+        const movedTask = activeTasks[fromIndex];
+        if (!movedTask) return;
+
+        // Calculate new position based on surrounding tasks
+        let newPosition;
+        if (toIndex === 0) {
+            // Moving to the top
+            const nextTask = activeTasks[1];
+            if (nextTask && nextTask.position) {
+                const nextPos = nextTask.position;
+                const newPos = (parseInt(nextPos.substring(0, 10), 36) - 1).toString(36).padStart(10, '0');
+                newPosition = newPos + '0000000000000';
+            } else {
+                newPosition = '00000000000000000000000';
+            }
+        } else if (toIndex >= activeTasks.length - 1) {
+            // Moving to the bottom
+            const prevTask = activeTasks[activeTasks.length - 1];
+            if (prevTask && prevTask.position) {
+                const prevPos = prevTask.position;
+                const newPos = (parseInt(prevPos.substring(0, 10), 36) + 1).toString(36).padStart(10, '0');
+                newPosition = newPos + '0000000000000';
+            } else {
+                newPosition = '99999999999999999999999';
+            }
+        } else {
+            // Moving between tasks
+            const prevTask = activeTasks[toIndex - 1];
+            const nextTask = activeTasks[toIndex + 1];
+            
+            if (prevTask && nextTask && prevTask.position && nextTask.position) {
+                // Generate position between prev and next
+                const prevPos = parseInt(prevTask.position.substring(0, 10), 36);
+                const nextPos = parseInt(nextTask.position.substring(0, 10), 36);
+                const midPos = Math.floor((prevPos + nextPos) / 2);
+                newPosition = midPos.toString(36).padStart(10, '0') + '0000000000000';
+            } else {
+                newPosition = Date.now().toString(36).padStart(23, '0');
+            }
+        }
+
+        // Update the task's position
+        movedTask.position = newPosition;
+
+        // If authenticated with Google, sync the new position
+        if (this.googleAPI.isAuthenticated && movedTask.googleId) {
+            try {
+                // Find the previous task for Google Tasks move API
+                const previousTaskId = toIndex > 0 && activeTasks[toIndex - 1] 
+                    ? activeTasks[toIndex - 1].googleId 
+                    : null;
+                
+                await this.googleAPI.moveTask(movedTask.googleId, null, previousTaskId);
+                console.log('Task position synced to Google Tasks');
+            } catch (error) {
+                console.error('Failed to sync task position to Google:', error);
+            }
+        }
+
+        // Save the updated tasks
+        await this.saveTasks();
     }
 
     /**

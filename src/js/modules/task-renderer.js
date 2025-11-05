@@ -14,42 +14,71 @@ class TaskRenderer {
     render() {
         Utils.safe(() => {
             const list = document.getElementById('taskList');
+            const completedList = document.getElementById('completedTaskList');
+            const completedSection = document.getElementById('completedTasksSection');
+            const completedCount = document.getElementById('completedTasksCount');
+            
             if (!list) return;
 
             list.innerHTML = '';
+            if (completedList) completedList.innerHTML = '';
 
-            // Sort tasks: by due date first, then by completion status
-            const sortedTasks = this.tasks
-                .map((task, originalIndex) => ({ task, originalIndex }))
+            // Separate active and completed tasks
+            const activeTasks = this.tasks.filter(task => !task.done);
+            const completedTasks = this.tasks.filter(task => task.done);
+
+            // Sort active tasks using Google Tasks native order (by position)
+            const sortedActiveTasks = activeTasks
+                .map((task, originalIndex) => ({ task, originalIndex: this.tasks.indexOf(task) }))
                 .sort((a, b) => {
-                    // First, separate completed and incomplete tasks
-                    if (a.task.done !== b.task.done) {
-                        return a.task.done ? 1 : -1;
+                    // Google Tasks uses lexicographic position sorting
+                    const aPos = a.task.position || '99999999999999999999999';
+                    const bPos = b.task.position || '99999999999999999999999';
+                    
+                    // Compare positions (smaller position = higher in list)
+                    if (aPos !== bPos) {
+                        return aPos.localeCompare(bPos);
                     }
-
-                    // For incomplete tasks, sort by due date
-                    if (!a.task.done && !b.task.done) {
-                        const aDate = a.task.dueDate ? new Date(a.task.dueDate) : null;
-                        const bDate = b.task.dueDate ? new Date(b.task.dueDate) : null;
-
-                        // Tasks with due dates come first
-                        if (aDate && !bDate) return -1;
-                        if (!aDate && bDate) return 1;
-                        if (aDate && bDate) return aDate - bDate;
-                    }
-
-                    return 0;
+                    
+                    // If positions are the same, fall back to creation time (newer first)
+                    const aCreated = new Date(a.task.createdAt || 0);
+                    const bCreated = new Date(b.task.createdAt || 0);
+                    return bCreated - aCreated;
                 });
 
-            sortedTasks.forEach(({ task, originalIndex }) => {
+            // Render active tasks
+            sortedActiveTasks.forEach(({ task, originalIndex }) => {
                 if (!task) return;
-
                 const li = this.createTaskElement(task, originalIndex);
                 list.appendChild(li);
             });
 
+            // Handle completed tasks section
+            if (completedTasks.length > 0 && completedSection && completedList && completedCount) {
+                completedSection.style.display = 'block';
+                completedCount.textContent = `(${completedTasks.length})`;
+                
+                // Sort completed tasks by completion date (most recent first)
+                const sortedCompletedTasks = completedTasks
+                    .map((task, originalIndex) => ({ task, originalIndex: this.tasks.indexOf(task) }))
+                    .sort((a, b) => {
+                        const aCompleted = new Date(a.task.completedAt || a.task.createdAt || 0);
+                        const bCompleted = new Date(b.task.completedAt || b.task.createdAt || 0);
+                        return bCompleted - aCompleted;
+                    });
+                
+                sortedCompletedTasks.forEach(({ task, originalIndex }) => {
+                    if (!task) return;
+                    const li = this.createTaskElement(task, originalIndex);
+                    completedList.appendChild(li);
+                });
+            } else if (completedSection) {
+                completedSection.style.display = 'none';
+            }
+
             // Set up event listeners after rendering
             this.setupTaskEventListeners();
+            this.setupCompletedTasksToggle();
         });
     }
 
@@ -234,17 +263,50 @@ class TaskRenderer {
     /**
      * Handle task drop for reordering
      */
-    handleTaskDrop(e, li) {
+    async handleTaskDrop(e, li) {
         const drag = document.querySelector('.task-item.dragging');
         if (drag && drag !== li) {
-            const from = parseInt(drag.dataset.index);
-            const to = parseInt(li.dataset.index);
-            const [item] = this.app.tasks.splice(from, 1);
-            this.app.tasks.splice(to, 0, item);
-            this.app.saveTasks();
+            const fromIndex = parseInt(drag.dataset.index);
+            const toIndex = parseInt(li.dataset.index);
+            
+            // Move the task in the array
+            const [item] = this.app.tasks.splice(fromIndex, 1);
+            this.app.tasks.splice(toIndex, 0, item);
+            
+            // Update positions and sync to Google Tasks
+            await this.app.updateTaskPositions(fromIndex, toIndex);
+            
+            // Re-render the tasks
             this.render();
         }
         document.querySelectorAll('.drop-anchor').forEach(anchor => anchor.remove());
+    }
+
+    /**
+     * Set up completed tasks toggle functionality
+     */
+    setupCompletedTasksToggle() {
+        const toggleBtn = document.getElementById('completedTasksToggle');
+        const completedList = document.getElementById('completedTaskList');
+        const header = document.getElementById('completedTasksHeader');
+        
+        if (toggleBtn && completedList && header) {
+            // Remove existing listeners
+            const newToggleBtn = toggleBtn.cloneNode(true);
+            toggleBtn.parentNode.replaceChild(newToggleBtn, toggleBtn);
+            
+            const newHeader = header.cloneNode(true);
+            header.parentNode.replaceChild(newHeader, header);
+            
+            // Add click listeners
+            [newToggleBtn, newHeader].forEach(element => {
+                element.addEventListener('click', () => {
+                    const isExpanded = completedList.style.display === 'block';
+                    completedList.style.display = isExpanded ? 'none' : 'block';
+                    newToggleBtn.classList.toggle('expanded', !isExpanded);
+                });
+            });
+        }
     }
 
     /**
@@ -270,6 +332,14 @@ class TaskRenderer {
                     const wasCompleted = this.app.tasks[i].done;
 
                     this.app.tasks[i].done = !this.app.tasks[i].done;
+                    
+                    // Track completion timestamp
+                    if (this.app.tasks[i].done && !wasCompleted) {
+                        this.app.tasks[i].completedAt = new Date().toISOString();
+                    } else if (!this.app.tasks[i].done && wasCompleted) {
+                        delete this.app.tasks[i].completedAt;
+                    }
+                    
                     await this.app.saveTasks();
 
                     // Animate completion

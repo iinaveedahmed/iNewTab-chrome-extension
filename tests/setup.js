@@ -62,9 +62,17 @@ beforeEach(() => {
         </form>
         <input id="taskInput" type="text">
         <ul id="taskList"></ul>
+        <div id="completedTasksSection" style="display: none;">
+            <div id="completedTasksHeader">
+                <span id="completedTasksCount">(0)</span>
+                <button id="completedTasksToggle"></button>
+            </div>
+            <ul id="completedTaskList" style="display: none;"></ul>
+        </div>
         <button id="googleSignIn"></button>
         <button id="syncNow"></button>
         <span id="syncStatus"></span>
+        <span id="syncStatusMinimal"></span>
         <div id="weather"></div>
         <div id="ticker"></div>
     `;

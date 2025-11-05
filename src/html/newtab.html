@@ -42,6 +42,17 @@
             </div>
             <input type="text" class="task-input" id="taskInput" placeholder="New task...">
             <ul class="task-list" id="taskList"></ul>
+            
+            <div class="completed-tasks-section" id="completedTasksSection" style="display: none;">
+                <div class="completed-tasks-header" id="completedTasksHeader">
+                    <span class="completed-tasks-title">Completed Tasks</span>
+                    <span class="completed-tasks-count" id="completedTasksCount">(0)</span>
+                    <button class="completed-tasks-toggle" id="completedTasksToggle">
+                        <i class="material-icons">expand_more</i>
+                    </button>
+                </div>
+                <ul class="completed-task-list" id="completedTaskList" style="display: none;"></ul>
+            </div>
         </div>
     </div>
 
@@ -127,6 +138,13 @@
                             <i class="material-icons">account_circle</i>
                             <span id="authButtonText">Connect</span>
                         </button>
+                    </div>
+
+                    <div class="settings-row" id="taskListSelectionRow" style="display: none;">
+                        <label for="taskListSelect" class="settings-label">Task List:</label>
+                        <select id="taskListSelect" class="settings-select">
+                            <option value="">Select a task list...</option>
+                        </select>
                     </div>
 
                     <div class="settings-row">
