@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "iNewTab",
-  "version": "2.0.0",
-  "description": "Beautiful productivity-focused new tab page with smart task management, Google Tasks sync, and customizable widgets",
+  "version": "2.2.0",
+  "description": "Beautiful productivity-focused new tab page with time-aware greetings, inspirational quotes, multi-engine search, smart task management, Google Tasks sync, and customizable widgets",
   "chrome_url_overrides": {
     "newtab": "src/html/newtab.html"
   },
@@ -11,7 +11,8 @@
     "identity"
   ],
   "host_permissions": [
-    "https://www.googleapis.com/*"
+    "https://www.googleapis.com/*",
+    "https://dummyjson.com/*"
   ],
   "oauth2": {
     "client_id": "680113862255-dgl81d4oo6jgd8i42sobgogcvae3f688.apps.googleusercontent.com",

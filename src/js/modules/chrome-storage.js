@@ -189,6 +189,46 @@ class ChromeStorage {
         }
     }
 
+    // Save quote batch
+    async saveQuoteBatch(batchData) {
+        try {
+            await new Promise((resolve, reject) => {
+                this.storage.set({
+                    'quoteBatch': batchData
+                }, () => {
+                    if (chrome.runtime.lastError) {
+                        reject(chrome.runtime.lastError);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+            return true;
+        } catch (error) {
+            console.error('Failed to save quote batch:', error);
+            return false;
+        }
+    }
+
+    // Load quote batch
+    async loadQuoteBatch() {
+        try {
+            const result = await new Promise((resolve, reject) => {
+                this.storage.get(['quoteBatch'], (result) => {
+                    if (chrome.runtime.lastError) {
+                        reject(chrome.runtime.lastError);
+                    } else {
+                        resolve(result);
+                    }
+                });
+            });
+            return result.quoteBatch || null;
+        } catch (error) {
+            console.error('Failed to load quote batch:', error);
+            return null;
+        }
+    }
+
     // Clear all stored data
     async clearAll() {
         try {
