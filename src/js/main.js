@@ -10,14 +10,18 @@ class NewTabApp {
         this.googleAPI = new GoogleTasksAPI();
         this.syncManager = new SyncManager(this.googleAPI, this.storage);
         this.settingsModule = new SettingsModule(this);
+        this.searchModule = new SearchModule();
 
         // Application state
         this.tasks = [];
         this.isInitialized = false;
+
+        // Optional modules (initialized based on visibility)
+        this.greetingModule = null;
         this.newsModule = null;
+        this.weatherModule = null;
 
         // Bind methods
-        this.handleSearch = this.handleSearch.bind(this);
         this.handleTaskInput = this.handleTaskInput.bind(this);
         this.handleGoogleSignIn = this.handleGoogleSignIn.bind(this);
         this.handleManualSync = this.handleManualSync.bind(this);
@@ -28,20 +32,48 @@ class NewTabApp {
      */
     async init() {
         try {
-            // Start clock
-            this.initClock();
+            // Load settings first to check visibility preferences
+            await this.settingsModule.loadSettings();
+            const visibility = this.settingsModule.visibility;
 
-            // Initialize task management
-            await this.initTasks();
+            // Apply visibility settings to DOM before initializing modules
+            this.settingsModule.applyVisibilitySettings();
 
-            // Initialize authentication
+            // Initialize clock and date (always needed for basic functionality)
+            if (visibility.clockDate) {
+                this.initClock();
+            }
+
+            // Initialize greeting and quote only if visible
+            if (visibility.greeting || visibility.quote) {
+                this.greetingModule = new GreetingModule(this.storage);
+                await this.greetingModule.init();
+            }
+
+            // Initialize search module only if visible
+            if (visibility.search) {
+                this.searchModule.init();
+            }
+
+            // Initialize task management only if visible
+            if (visibility.tasks) {
+                await this.initTasks();
+            }
+
+            // Initialize authentication (needed for sync regardless of task visibility)
             await this.initAuth();
 
-            // Initialize weather and news
-            this.initWeather();
-            await this.initNews();
+            // Initialize weather only if visible
+            if (visibility.weather) {
+                this.initWeather();
+            }
 
-            // Initialize settings
+            // Initialize news only if visible
+            if (visibility.news) {
+                await this.initNews();
+            }
+
+            // Initialize settings UI
             await this.settingsModule.init();
 
             // Set up event listeners
@@ -140,8 +172,8 @@ class NewTabApp {
      * Initialize weather widget
      */
     initWeather() {
-        const weatherModule = new WeatherModule();
-        weatherModule.init();
+        this.weatherModule = new WeatherModule();
+        this.weatherModule.init();
     }
 
     /**
@@ -163,38 +195,14 @@ class NewTabApp {
      * Set up event listeners
      */
     setupEventListeners() {
-        // Search form
-        const searchForm = document.getElementById('searchForm');
-        if (searchForm) {
-            searchForm.addEventListener('submit', this.handleSearch);
-        }
-
         // Task input
         const taskInput = document.getElementById('taskInput');
         if (taskInput) {
             taskInput.addEventListener('keypress', this.handleTaskInput);
         }
 
+        // Note: Search is now handled by SearchModule
         // Note: Google sign in and manual sync now handled through settings popup
-    }
-
-    /**
-     * Handle search form submission
-     */
-    handleSearch(e) {
-        e.preventDefault();
-        Utils.safe(() => {
-            const searchBox = document.getElementById('searchBox');
-            const query = searchBox?.value.trim();
-
-            if (!query) return;
-
-            const searchUrl = query.startsWith('g:')
-                ? `https://www.google.com/search?q=${encodeURIComponent(query.slice(2).trim())}`
-                : `https://www.perplexity.ai/search?q=${encodeURIComponent(query)}`;
-
-            window.location.href = searchUrl;
-        });
     }
 
     /**

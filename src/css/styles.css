@@ -23,18 +23,109 @@ body {
     gap: 32px;
 }
 
+/* Hide elements when visibility is toggled off */
+.hidden {
+    display: none !important;
+}
+
+/* Hide widgets by default to prevent flash of empty content */
+#greeting,
+#quoteContainer,
+#clockDateWidget,
+#searchForm,
+#tasksContainer,
+#weather,
+#newsTicker {
+    display: none;
+}
+
+/* Show widgets when visible class is added */
+#greeting.visible,
+#quoteContainer.visible,
+#clockDateWidget.visible,
+#searchForm.visible,
+#tasksContainer.visible,
+#weather.visible,
+#newsTicker.visible {
+    display: block;
+}
+
+/* Maintain flex for searchForm when visible */
+#searchForm.visible {
+    display: block;
+}
+
+.greeting {
+    font-size: 48px;
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: -0.5px;
+    margin-bottom: 16px;
+}
+
+.quote-container {
+    max-width: 600px;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.quote-text {
+    font-size: 16px;
+    font-weight: 400;
+    color: #aaa;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.quote-author {
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    letter-spacing: 0.5px;
+}
+
+/* Bottom widgets container */
+.bottom-widgets {
+    position: fixed;
+    bottom: 80px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+    z-index: 100;
+}
+
+/* Clock and Date Widget */
+.clock-date-widget {
+    background: #222;
+    border: 1px solid #333;
+    padding: 16px 20px;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 200px;
+}
+
 .clock {
-    font-size: 64px;
+    font-size: 32px;
     font-weight: 200;
     color: #fff;
     letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
 }
 
 .date {
-    font-size: 16px;
+    font-size: 13px;
     color: #888;
-    font-weight: 300;
-    margin-top: -20px;
+    font-weight: 400;
+    line-height: 1;
+}
+
+#searchForm {
+    position: relative;
+    width: 100%;
 }
 
 .search-box {
@@ -46,11 +137,260 @@ body {
     background: #222;
     color: #fff;
     outline: none;
+    transition: all 0.2s ease;
 }
 
 .search-box:focus {
     background: #2a2a2a;
     border-color: #444;
+}
+
+.search-box.has-tag {
+    padding-left: 120px;
+}
+
+/* Search Engine Tag */
+.search-engine-tag {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    white-space: nowrap;
+    animation: slideIn 0.2s ease;
+    z-index: 1;
+    pointer-events: auto;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.search-engine-tag .tag-name {
+    user-select: none;
+}
+
+.search-engine-tag .tag-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.search-engine-tag .tag-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.search-engine-tag .tag-close .material-icons {
+    font-size: 14px;
+    color: #fff;
+}
+
+/* Help Modal */
+.help-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.help-modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.help-modal {
+    background: #222;
+    border: 1px solid #333;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.help-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    border-bottom: 1px solid #333;
+}
+
+.help-header h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+}
+
+.help-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: rgba(68, 68, 68, 0.5);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.help-close:hover {
+    background: rgba(68, 68, 68, 0.8);
+}
+
+.help-close .material-icons {
+    font-size: 20px;
+    color: #fff;
+}
+
+.help-content {
+    padding: 24px;
+}
+
+.help-description {
+    color: #aaa;
+    font-size: 14px;
+    margin: 0 0 24px 0;
+    text-align: center;
+}
+
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.shortcut-item:hover {
+    background: #333;
+    border-color: #444;
+}
+
+.shortcut-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.shortcut-color {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.shortcut-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+}
+
+.shortcut-key {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.help-tips {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.help-tips h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 12px 0;
+}
+
+.help-tips ul {
+    margin: 0;
+    padding: 0 0 0 20px;
+    list-style-type: disc;
+}
+
+.help-tips li {
+    color: #aaa;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.help-tips li:last-child {
+    margin-bottom: 0;
+}
+
+kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-family: 'Inter', monospace;
+    font-weight: 600;
+    color: #fff;
+    background: #333;
+    border: 1px solid #444;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .tasks-container {
@@ -700,9 +1040,6 @@ body.light-theme .task-urgent .task-main {
 }
 
 .weather-widget {
-    position: fixed;
-    bottom: 80px;
-    right: 24px;
     background: #222;
     border: 1px solid #333;
     padding: 16px;
@@ -762,20 +1099,31 @@ body.light-theme .task-urgent .task-main {
     100% { transform: translateX(-50%); }
 }
 
-/* Settings Menu - Top Right */
-.settings-container-top {
+/* Settings Menu - Top Right with Hover Reveal */
+.settings-hover-area {
     position: fixed;
-    top: 24px;
-    right: 24px;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
     z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
 }
 
-body:hover .settings-container-top {
+.settings-container-top {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+.settings-hover-area:hover .settings-container-top,
+.settings-container-top:hover {
     opacity: 1;
     visibility: visible;
+    transform: translateY(0);
 }
 
 .settings-trigger-top {
@@ -936,6 +1284,37 @@ body:hover .settings-container-top {
 
 .theme-btn .material-icons {
     font-size: 18px;
+}
+
+/* Visibility Settings */
+.visibility-row {
+    padding: 4px 0;
+}
+
+.visibility-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    color: #ccc;
+    font-size: 14px;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+.visibility-label:hover {
+    color: #fff;
+}
+
+.visibility-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #667eea;
+}
+
+.visibility-label span {
+    flex: 1;
 }
 
 /* Settings Buttons */

@@ -19,7 +19,7 @@ const API_CONFIG = {
 
 // Default RSS feeds for news
 const RSS_FEEDS = [
-    'https://news.google.com/rss/topics/CAAqKggKIiRDQkFTRlFvSUwyMHZNRFZxYUdjU0JXVnVMVWRDR2dKUVN5Z0FQAQ?ceid=PK:en&oc=3&hl=en-PK&gl=PK'
+    'https://news.google.com/rss'
 ];
 
 // Weather condition descriptions
@@ -93,6 +93,59 @@ const SUCCESS_MESSAGES = {
     AUTH_SUCCESS: 'Authentication successful'
 };
 
+// Search engines configuration
+const SEARCH_ENGINES = {
+    perplexity: {
+        name: 'Perplexity',
+        shortcut: 'p',
+        url: 'https://www.perplexity.ai/search?q=',
+        color: '#20808d',
+        isDefault: true
+    },
+    google: {
+        name: 'Google',
+        shortcut: 'g',
+        url: 'https://www.google.com/search?q=',
+        color: '#4285f4'
+    },
+    chatgpt: {
+        name: 'ChatGPT',
+        shortcut: 'c',
+        url: 'https://chatgpt.com/?q=',
+        color: '#10a37f'
+    },
+    duckduckgo: {
+        name: 'DuckDuckGo',
+        shortcut: 'd',
+        url: 'https://duckduckgo.com/?q=',
+        color: '#de5833'
+    },
+    bing: {
+        name: 'Bing',
+        shortcut: 'b',
+        url: 'https://www.bing.com/search?q=',
+        color: '#008373'
+    },
+    youtube: {
+        name: 'YouTube',
+        shortcut: 'y',
+        url: 'https://www.youtube.com/results?search_query=',
+        color: '#ff0000'
+    },
+    github: {
+        name: 'GitHub',
+        shortcut: 'gh',
+        url: 'https://github.com/search?q=',
+        color: '#24292e'
+    },
+    stackoverflow: {
+        name: 'Stack Overflow',
+        shortcut: 'so',
+        url: 'https://stackoverflow.com/search?q=',
+        color: '#f48024'
+    }
+};
+
 // Export constants
 window.Constants = {
     API_CONFIG,
@@ -104,5 +157,6 @@ window.Constants = {
     TASK_STATUS,
     GOOGLE_TASK_STATUS,
     ERROR_MESSAGES,
-    SUCCESS_MESSAGES
+    SUCCESS_MESSAGES,
+    SEARCH_ENGINES
 };

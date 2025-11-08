@@ -12,16 +12,21 @@
     <title>iNewTab</title>
 </head>
 <body>
-    <!-- Settings Button -->
-    <div class="settings-container-top">
-        <button class="settings-trigger-top" id="settingsBtn" title="Settings">
-            <i class="material-icons">settings</i>
-        </button>
+    <!-- Settings Button with Hover Trigger Area -->
+    <div class="settings-hover-area">
+        <div class="settings-container-top">
+            <button class="settings-trigger-top" id="settingsBtn" title="Settings">
+                <i class="material-icons">settings</i>
+            </button>
+        </div>
     </div>
 
     <div class="main-content">
-        <div class="clock" id="clock">00:00:00</div>
-        <div class="date" id="date"></div>
+        <div class="greeting" id="greeting">Good Morning</div>
+        <div class="quote-container" id="quoteContainer">
+            <div class="quote-text" id="quoteText">Loading...</div>
+            <div class="quote-author" id="quoteAuthor"></div>
+        </div>
 
         <form id="searchForm" style="width: 100%; max-width: 600px;">
             <input
@@ -29,13 +34,13 @@
                 name="q"
                 class="search-box"
                 id="searchBox"
-                placeholder="Search... (type 'g:' for Google)"
+                placeholder="Search..."
                 autocomplete="off"
                 autofocus
             >
         </form>
 
-        <div class="tasks-container">
+        <div class="tasks-container" id="tasksContainer">
             <div class="tasks-header">
                 <div class="tasks-title">Tasks</div>
                 <div class="sync-status-minimal" id="syncStatusMinimal">Not synced</div>
@@ -56,13 +61,49 @@
         </div>
     </div>
 
-    <div class="weather-widget" id="weather">
-        <div class="weather-location">Loading...</div>
+    <div class="bottom-widgets">
+        <div class="weather-widget" id="weather">
+            <div class="weather-location">Loading...</div>
+        </div>
+
+        <div class="clock-date-widget" id="clockDateWidget">
+            <div class="clock" id="clock">00:00:00</div>
+            <div class="date" id="date"></div>
+        </div>
     </div>
 
-    <div class="news-ticker">
+    <div class="news-ticker" id="newsTicker">
         <div class="ticker-content" id="ticker">
             <span class="ticker-item">Loading news...</span>
+        </div>
+    </div>
+
+    <!-- Search Help Modal -->
+    <div class="help-modal-overlay" id="helpModalOverlay">
+        <div class="help-modal" id="helpModal">
+            <div class="help-header">
+                <h3>Search Engine Shortcuts</h3>
+                <button class="help-close" id="helpClose">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="help-content">
+                <p class="help-description">Type a shortcut and press <kbd>Tab</kbd> to select a search engine</p>
+
+                <div class="shortcuts-grid" id="shortcutsGrid">
+                    <!-- Shortcuts will be dynamically populated -->
+                </div>
+
+                <div class="help-tips">
+                    <h4>Tips</h4>
+                    <ul>
+                        <li>Press <kbd>Tab</kbd> after typing a shortcut to activate the search engine</li>
+                        <li>Press <kbd>Esc</kbd> to clear the selected engine</li>
+                        <li>Press <kbd>Ctrl</kbd>+<kbd>/</kbd> to show/hide this help</li>
+                        <li>Click the <kbd>×</kbd> on a tag to remove the selection</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -106,6 +147,52 @@
                                 Light
                             </button>
                         </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4 class="section-heading">Visibility</h4>
+                    <div class="settings-row visibility-row">
+                        <label class="visibility-label">
+                            <input type="checkbox" id="showGreeting" checked>
+                            <span>Show Greeting</span>
+                        </label>
+                    </div>
+                    <div class="settings-row visibility-row">
+                        <label class="visibility-label">
+                            <input type="checkbox" id="showQuote" checked>
+                            <span>Show Quote</span>
+                        </label>
+                    </div>
+                    <div class="settings-row visibility-row">
+                        <label class="visibility-label">
+                            <input type="checkbox" id="showClockDate" checked>
+                            <span>Show Clock & Date</span>
+                        </label>
+                    </div>
+                    <div class="settings-row visibility-row">
+                        <label class="visibility-label">
+                            <input type="checkbox" id="showSearch" checked>
+                            <span>Show Search</span>
+                        </label>
+                    </div>
+                    <div class="settings-row visibility-row">
+                        <label class="visibility-label">
+                            <input type="checkbox" id="showTasks" checked>
+                            <span>Show Tasks</span>
+                        </label>
+                    </div>
+                    <div class="settings-row visibility-row">
+                        <label class="visibility-label">
+                            <input type="checkbox" id="showWeather" checked>
+                            <span>Show Weather</span>
+                        </label>
+                    </div>
+                    <div class="settings-row visibility-row">
+                        <label class="visibility-label">
+                            <input type="checkbox" id="showNews" checked>
+                            <span>Show News Ticker</span>
+                        </label>
                     </div>
                 </div>
 
@@ -187,7 +274,7 @@
         <!-- Credits -->
         <div class="settings-footer">
             <div class="credits">
-                <strong>iNewTab</strong> by <strong>Naveed Ahmed</strong> • <strong>INATIQO Pty Ltd</strong> • <span class="version">v2.0.0</span>
+                <strong>iNewTab</strong> by <strong>Naveed Ahmed</strong> • <strong>INATIQO Pty Ltd</strong> • <span class="version">v2.2.0</span>
             </div>
         </div>
     </div>
@@ -203,7 +290,9 @@
     <script src="../js/modules/task-renderer.js"></script>
     <script src="../js/modules/weather-module.js"></script>
     <script src="../js/modules/news-module.js"></script>
+    <script src="../js/modules/greeting-module.js"></script>
     <script src="../js/modules/settings-module.js"></script>
+    <script src="../js/modules/search-module.js"></script>
 
     <!-- Main application -->
     <script src="../js/main.js"></script>

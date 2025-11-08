@@ -1,7 +1,7 @@
 {
   "name": "inewtab-chrome-extension",
-  "version": "2.0.0",
-  "description": "Beautiful productivity-focused new tab page with smart task management, Google Tasks sync, and customizable widgets",
+  "version": "2.2.0",
+  "description": "Beautiful productivity-focused new tab page with time-aware greetings, inspirational quotes, multi-engine search, smart task management, Google Tasks sync, and customizable widgets",
   "repository": {
     "type": "git",
     "url": "git@github.com:iinaveedahmed/iNewTab-chrome-extension.git"
@@ -68,7 +68,9 @@
       "TaskRenderer": "readonly",
       "WeatherModule": "readonly",
       "NewsModule": "readonly",
-      "SettingsModule": "readonly"
+      "GreetingModule": "readonly",
+      "SettingsModule": "readonly",
+      "SearchModule": "readonly"
     },
     "rules": {
       "no-unused-vars": "warn",
@@ -82,13 +84,19 @@
     "chrome-extension",
     "new-tab",
     "inewtab",
+    "greetings",
+    "quotes",
+    "inspirational-quotes",
+    "multi-search",
+    "search-engine",
     "google-tasks",
     "productivity",
     "task-management",
     "material-design",
     "weather-widget",
     "rss-feeds",
-    "dark-theme"
+    "dark-theme",
+    "customizable"
   ],
   "author": "Naveed Ahmad <naveed@inatiqo.com>",
   "license": "MIT"
