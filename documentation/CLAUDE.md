@@ -153,7 +153,7 @@ The extension uses **Google Tasks native position-based ordering**:
 - Client ID configured in `manifest.json` (must match Google Cloud Console)
 - Token stored in `this.accessToken`, revoked on sign-out
 - Auth status persisted to Chrome storage for auto-login
-- See `docs/SETUP.md` for Google Cloud configuration steps
+- See `documentation/SETUP.md` for Google Cloud configuration steps
 
 ## Testing
 

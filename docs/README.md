@@ -2,10 +2,12 @@
 
 This directory contains the marketing website for the iNewTab Chrome extension.
 
+**Note:** This website is hosted via GitHub Pages from the `/docs` folder.
+
 ## 🌐 Structure
 
 ```
-website/
+docs/
 ├── index.html          # Main landing page
 ├── privacy.html        # Privacy Policy page
 ├── terms.html          # Terms of Service page
@@ -40,29 +42,29 @@ The website includes:
 
 ## 🚀 Deployment
 
-### Option 1: GitHub Pages
+### Option 1: GitHub Pages (Recommended)
 
-1. Push the website to your repository
+1. Push the website to your repository (already in `/docs` folder)
 2. Go to Settings → Pages
-3. Select the branch and `/website` folder
+3. Select the branch and `/docs` folder
 4. Your site will be available at `https://yourusername.github.io/iNewTab-chrome-extension/`
 
 ### Option 2: Netlify
 
 1. Connect your GitHub repository to Netlify
-2. Set the base directory to `website`
-3. Set the publish directory to `website`
+2. Set the base directory to `docs`
+3. Set the publish directory to `docs`
 4. Deploy!
 
 ### Option 3: Vercel
 
 1. Import your GitHub repository
-2. Set the root directory to `website`
+2. Set the root directory to `docs`
 3. Deploy automatically
 
 ### Option 4: Custom Hosting
 
-Simply upload all files in the `website` directory to your web server.
+Simply upload all files in the `docs` directory to your web server.
 
 ## 🛠️ Development
 
@@ -72,14 +74,14 @@ You can test the website locally using any static server:
 
 **Using Python:**
 ```bash
-cd website
+cd docs
 python -m http.server 8000
 # Visit http://localhost:8000
 ```
 
 **Using Node.js (http-server):**
 ```bash
-cd website
+cd docs
 npx http-server
 ```
 

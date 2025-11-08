@@ -108,7 +108,7 @@ A beautiful, productivity-focused Chrome extension that transforms your new tab 
    ```
 
 3. **Set up Google OAuth**
-   - Follow instructions in `docs/SETUP.md` to create Google Cloud credentials
+   - Follow instructions in `documentation/SETUP.md` to create Google Cloud credentials
    - Update `manifest.json` with your OAuth client ID
 
 4. **Load in Chrome**
@@ -157,7 +157,8 @@ iNewTab-chrome-extension/
 │   ├── unit/                     # Unit tests
 │   ├── integration/              # Integration tests
 │   └── setup.js                  # Test setup
-├── docs/                         # Documentation
+├── documentation/                # Documentation (API, setup, contributing)
+├── docs/                         # Website (GitHub Pages)
 ├── dist/                         # Build output
 ├── manifest.json                 # Extension manifest
 └── package.json                  # NPM configuration
