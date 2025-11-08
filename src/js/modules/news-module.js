@@ -58,6 +58,15 @@ class NewsModule {
      */
     async loadNews() {
         try {
+            // If no feeds are configured, clear cached news
+            if (this.rssFeeds.length === 0) {
+                this.cachedNews = [];
+                this.lastNewsUpdate = null;
+                await this.storage.saveCachedNews([]);
+                this.renderNews();
+                return;
+            }
+
             const allItems = [];
 
             // Fetch from all RSS feeds
@@ -77,6 +86,11 @@ class NewsModule {
 
                 // Save to storage
                 await this.storage.saveCachedNews(this.cachedNews);
+            } else {
+                // No items fetched, clear cache
+                this.cachedNews = [];
+                this.lastNewsUpdate = null;
+                await this.storage.saveCachedNews([]);
             }
 
             this.renderNews();
@@ -154,7 +168,12 @@ class NewsModule {
             this.setupNewsClickListeners();
 
         } else {
-            this.tickerElement.innerHTML = '<span class="ticker-item">News unavailable</span>';
+            // Check if no feeds are configured
+            if (this.rssFeeds.length === 0) {
+                this.tickerElement.innerHTML = '<span class="ticker-item">No RSS feeds configured</span>';
+            } else {
+                this.tickerElement.innerHTML = '<span class="ticker-item">Loading news...</span>';
+            }
         }
     }
 

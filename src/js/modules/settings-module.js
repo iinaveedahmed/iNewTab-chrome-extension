@@ -9,6 +9,17 @@ class SettingsModule {
         this.currentTheme = 'dark';
         this.rssFeeds = Constants.RSS_FEEDS.slice(); // Copy default feeds
 
+        // Visibility settings
+        this.visibility = {
+            greeting: true,
+            quote: true,
+            clockDate: true,
+            search: true,
+            tasks: true,
+            weather: true,
+            news: true
+        };
+
         // DOM elements
         this.settingsBtn = null;
         this.settingsPopup = null;
@@ -103,6 +114,19 @@ class SettingsModule {
         if (taskListSelect) {
             taskListSelect.addEventListener('change', (e) => this.handleTaskListChange(e.target.value));
         }
+
+        // Visibility toggles
+        const visibilityToggles = [
+            'showGreeting', 'showQuote', 'showClockDate',
+            'showSearch', 'showTasks', 'showWeather', 'showNews'
+        ];
+
+        visibilityToggles.forEach(toggleId => {
+            const checkbox = document.getElementById(toggleId);
+            if (checkbox) {
+                checkbox.addEventListener('change', (e) => this.handleVisibilityToggle(toggleId, e.target.checked));
+            }
+        });
     }
 
     /**
@@ -261,11 +285,27 @@ class SettingsModule {
     }
 
     /**
-     * Remove RSS feed
+     * Remove RSS feed by URL
      */
     async removeRssFeed(url) {
         const index = this.rssFeeds.indexOf(url);
         if (index > -1) {
+            this.rssFeeds.splice(index, 1);
+            await this.saveSettings();
+            this.renderRssFeeds();
+
+            // Update news module
+            if (this.app.newsModule) {
+                this.app.newsModule.updateFeeds(this.rssFeeds);
+            }
+        }
+    }
+
+    /**
+     * Remove RSS feed by index
+     */
+    async removeRssFeedByIndex(index) {
+        if (index >= 0 && index < this.rssFeeds.length) {
             this.rssFeeds.splice(index, 1);
             await this.saveSettings();
             this.renderRssFeeds();
@@ -289,17 +329,25 @@ class SettingsModule {
             return;
         }
 
-        rssList.innerHTML = this.rssFeeds.map(url => {
+        rssList.innerHTML = this.rssFeeds.map((url, index) => {
             const displayUrl = url.length > 40 ? url.substring(0, 40) + '...' : url;
             return `
                 <div class="rss-item">
                     <span class="rss-url" title="${this.escapeHtml(url)}">${this.escapeHtml(displayUrl)}</span>
-                    <button class="rss-remove" onclick="window.settingsModule.removeRssFeed('${this.escapeHtml(url)}')" title="Remove feed">
+                    <button class="rss-remove" data-index="${index}" title="Remove feed">
                         <i class="material-icons" style="font-size: 16px;">delete</i>
                     </button>
                 </div>
             `;
         }).join('');
+
+        // Add event listeners for remove buttons
+        rssList.querySelectorAll('.rss-remove').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const index = parseInt(btn.dataset.index);
+                this.removeRssFeedByIndex(index);
+            });
+        });
     }
 
     /**
@@ -510,6 +558,15 @@ class SettingsModule {
             if (settings) {
                 this.currentTheme = settings.theme || 'dark';
                 this.rssFeeds = settings.rssFeeds || Constants.RSS_FEEDS.slice();
+                this.visibility = settings.visibility || {
+                    greeting: true,
+                    quote: true,
+                    clockDate: true,
+                    search: true,
+                    tasks: true,
+                    weather: true,
+                    news: true
+                };
             }
         } catch (error) {
             console.error('Failed to load settings:', error);
@@ -524,6 +581,7 @@ class SettingsModule {
             const settings = {
                 theme: this.currentTheme,
                 rssFeeds: this.rssFeeds,
+                visibility: this.visibility,
                 lastUpdated: new Date().toISOString()
             };
 
@@ -531,6 +589,183 @@ class SettingsModule {
         } catch (error) {
             console.error('Failed to save settings:', error);
         }
+    }
+
+    /**
+     * Handle visibility toggle
+     */
+    async handleVisibilityToggle(toggleId, isChecked) {
+        const elementMap = {
+            showGreeting: 'greeting',
+            showQuote: 'quoteContainer',
+            showClockDate: 'clockDateWidget',
+            showSearch: 'searchForm',
+            showTasks: 'tasksContainer',
+            showWeather: 'weather',
+            showNews: 'newsTicker'
+        };
+
+        const visibilityKey = {
+            showGreeting: 'greeting',
+            showQuote: 'quote',
+            showClockDate: 'clockDate',
+            showSearch: 'search',
+            showTasks: 'tasks',
+            showWeather: 'weather',
+            showNews: 'news'
+        };
+
+        const elementId = elementMap[toggleId];
+        const key = visibilityKey[toggleId];
+
+        if (elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                if (isChecked) {
+                    element.classList.remove('hidden');
+                    element.classList.add('visible');
+                    // Start module if needed
+                    await this.startModule(key);
+                } else {
+                    element.classList.add('hidden');
+                    element.classList.remove('visible');
+                    // Stop module to save resources
+                    this.stopModule(key);
+                }
+            }
+        }
+
+        // Update visibility state
+        if (key) {
+            this.visibility[key] = isChecked;
+            await this.saveSettings();
+        }
+    }
+
+    /**
+     * Start a module when visibility is toggled on
+     */
+    async startModule(moduleKey) {
+        switch (moduleKey) {
+        case 'greeting':
+        case 'quote':
+            if (!this.app.greetingModule) {
+                this.app.greetingModule = new GreetingModule(this.app.storage);
+                await this.app.greetingModule.init();
+            }
+            break;
+
+        case 'weather':
+            if (!this.app.weatherModule) {
+                this.app.initWeather();
+            }
+            break;
+
+        case 'news':
+            if (!this.app.newsModule) {
+                await this.app.initNews();
+            }
+            break;
+
+        case 'search':
+            if (!this.app.searchModule.searchBox) {
+                this.app.searchModule.init();
+            }
+            break;
+
+        case 'tasks':
+            if (!this.app.tasks || this.app.tasks.length === 0) {
+                await this.app.initTasks();
+            }
+            break;
+        }
+    }
+
+    /**
+     * Stop a module when visibility is toggled off
+     */
+    stopModule(moduleKey) {
+        switch (moduleKey) {
+        case 'greeting':
+        case 'quote':
+            if (this.app.greetingModule && !this.visibility.greeting && !this.visibility.quote) {
+                this.app.greetingModule.destroy();
+                this.app.greetingModule = null;
+            }
+            break;
+
+        case 'weather':
+            if (this.app.weatherModule) {
+                this.app.weatherModule.destroy();
+                this.app.weatherModule = null;
+            }
+            break;
+
+        case 'news':
+            if (this.app.newsModule) {
+                this.app.newsModule.destroy();
+                this.app.newsModule = null;
+            }
+            break;
+
+        case 'search':
+            if (this.app.searchModule) {
+                this.app.searchModule.destroy();
+            }
+            break;
+        }
+    }
+
+    /**
+     * Apply visibility settings
+     */
+    applyVisibilitySettings() {
+        const elementMap = {
+            greeting: 'greeting',
+            quote: 'quoteContainer',
+            clockDate: 'clockDateWidget',
+            search: 'searchForm',
+            tasks: 'tasksContainer',
+            weather: 'weather',
+            news: 'newsTicker'
+        };
+
+        Object.keys(this.visibility).forEach(key => {
+            const elementId = elementMap[key];
+            if (elementId) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    if (this.visibility[key]) {
+                        element.classList.remove('hidden');
+                        element.classList.add('visible');
+                    } else {
+                        element.classList.add('hidden');
+                        element.classList.remove('visible');
+                    }
+                }
+            }
+        });
+
+        // Update checkboxes in settings
+        const checkboxMap = {
+            greeting: 'showGreeting',
+            quote: 'showQuote',
+            clockDate: 'showClockDate',
+            search: 'showSearch',
+            tasks: 'showTasks',
+            weather: 'showWeather',
+            news: 'showNews'
+        };
+
+        Object.keys(this.visibility).forEach(key => {
+            const checkboxId = checkboxMap[key];
+            if (checkboxId) {
+                const checkbox = document.getElementById(checkboxId);
+                if (checkbox) {
+                    checkbox.checked = this.visibility[key];
+                }
+            }
+        });
     }
 
     /**
@@ -544,6 +779,9 @@ class SettingsModule {
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.theme === this.currentTheme);
         });
+
+        // Apply visibility settings
+        this.applyVisibilitySettings();
     }
 
     /**
