@@ -7,7 +7,7 @@
 [![Google Tasks API](https://img.shields.io/badge/Google_Tasks-API-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/tasks)
 [![Jest](https://img.shields.io/badge/Jest-Testing-C21325?style=for-the-badge&logo=jest&logoColor=white)](https://jestjs.io/)
 
-A beautiful, productivity-focused Chrome extension that transforms your new tab page into a smart dashboard with advanced task management, Google Tasks sync with multi-list support, weather updates, and customizable news feeds.
+A beautiful, productivity-focused Chrome extension that transforms your new tab page into a smart dashboard with time-aware greetings, inspirational quotes, multi-engine search, advanced task management, Google Tasks sync with multi-list support, weather updates, and customizable news feeds.
 
 ## Features
 
@@ -51,13 +51,45 @@ A beautiful, productivity-focused Chrome extension that transforms your new tab 
 - Cached news for offline viewing
 - Clickable news items that open in new tabs
 
+💬 **Smart Greetings & Quotes**
+- **240 Casual Greetings** - 10 unique greetings for each hour of the day
+- **Weekend-Specific Messages** - Special greetings for Saturdays and Sundays
+- **Auto-Cycling** - Greetings change every ~6 minutes within the hour
+- **Time-Aware** - Context-appropriate messages based on time of day
+- **Inspirational Quotes** - Fetched from DummyJSON API
+- **Quote Batch System** - 20 quotes fetched and cached for offline use
+- **Smart Cycling** - New quote on each page refresh
+- **Auto-Refetch** - Fetches more quotes when 5 or fewer remain
+- Fallback quotes for offline scenarios
+
 ⏰ **Real-time Clock**
 - Live updating clock with date display
 - 12-hour format with AM/PM indicator
 
-🔍 **Smart Search**
-- Default search via Perplexity.ai
-- Google search with 'g:' prefix
+🎨 **Customization & Visibility**
+- **Show/Hide Any Widget** - Toggle visibility for greeting, quote, clock, search, tasks, weather, news
+- **Settings Hover Reveal** - Settings icon appears only when hovering top-right corner
+- **Resource Optimization** - Hidden widgets don't load or consume resources
+- **Fast Loading** - No fade-in animations for instant display
+- **Theme Persistence** - Settings saved and restored on reload
+
+🔍 **Multi-Engine Smart Search**
+- **Quick Search Engine Selection** - Type shortcut + Tab to select engine
+- **8 Popular Search Engines** - Perplexity (default), Google, ChatGPT, DuckDuckGo, Bing, YouTube, GitHub, Stack Overflow
+- **Visual Engine Tags** - Color-coded tags appear inside search box
+- **Interactive Help Modal** - Press `Ctrl+/` to view all shortcuts
+- **Keyboard Shortcuts**:
+  - `p` + Tab → Perplexity
+  - `g` + Tab → Google
+  - `c` + Tab → ChatGPT
+  - `d` + Tab → DuckDuckGo
+  - `b` + Tab → Bing
+  - `y` + Tab → YouTube
+  - `gh` + Tab → GitHub
+  - `so` + Tab → Stack Overflow
+  - `Ctrl+/` → Show/hide help modal
+  - `Esc` → Clear selection or close help
+- **Easy Tag Removal** - Press Esc or click X to clear selection
 - Instant navigation on form submission
 
 ## Installation
@@ -111,7 +143,10 @@ iNewTab-chrome-extension/
 │       │   ├── sync-manager.js      # Sync management
 │       │   ├── task-renderer.js     # Task UI rendering
 │       │   ├── weather-module.js    # Weather widget
-│       │   └── news-module.js       # News ticker
+│       │   ├── news-module.js       # News ticker
+│       │   ├── greeting-module.js   # Greetings & quotes
+│       │   ├── search-module.js     # Multi-engine search
+│       │   └── settings-module.js   # Settings management
 │       ├── utils/                # Utility functions
 │       │   ├── constants.js         # App constants
 │       │   └── helpers.js           # Helper functions
@@ -178,13 +213,15 @@ The extension uses Google OAuth for authentication. Configure your credentials i
 ### Customization
 
 #### RSS Feeds
-Modify news sources in `src/js/utils/constants.js`:
+Default news source in `src/js/utils/constants.js`:
 
 ```javascript
 const RSS_FEEDS = [
-    'https://your-rss-feed-url.com/feed'
+    'https://news.google.com/rss'
 ];
 ```
+
+You can also add/remove RSS feeds through the Settings interface (Settings → News tab).
 
 #### Sync Intervals
 Adjust sync frequency in `src/js/utils/constants.js`:
@@ -342,10 +379,25 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [Google Tasks API](https://developers.google.com/tasks)
 - [Open-Meteo Weather API](https://open-meteo.com/)
 - [RSS2JSON API](https://rss2json.com/)
+- [DummyJSON API](https://dummyjson.com/) - For inspirational quotes
 - [Material Design Icons](https://fonts.google.com/icons)
 - [Inter Font](https://fonts.google.com/specimen/Inter)
 
 ## Changelog
+
+### Version 2.2.0
+- **Smart Greetings System** - 240 casual, time-aware greetings (10 per hour)
+- **Weekend Greetings** - Special messages for Saturdays and Sundays
+- **Inspirational Quotes** - Batch fetching from DummyJSON API with caching
+- **Quote Cycling** - New quote on each page refresh with auto-refetch
+- **Multi-Engine Search** - 8 search engines with keyboard shortcuts
+- **Search Help Modal** - Press Ctrl+/ to view shortcuts and tips
+- **Visibility Controls** - Show/hide any widget (greeting, quote, clock, search, tasks, weather, news)
+- **Settings Hover Reveal** - Settings icon appears on top-right corner hover
+- **Resource Optimization** - Hidden widgets don't load or consume resources
+- **Performance Boost** - Removed fade-in animations for instant display
+- Enhanced ChromeStorage with quote batch caching
+- Fixed CORS issues with CORS-friendly API selection
 
 ### Version 2.1.0
 - **Google Task List Selection** - Choose which Google Task List to display

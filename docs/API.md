@@ -511,6 +511,163 @@ Cleans up timers and resources.
 
 **Returns:** void
 
+### GreetingModule
+
+Manages time-aware greetings and inspirational quotes.
+
+#### Constructor
+```javascript
+const greeting = new GreetingModule(storage);
+```
+
+**Parameters:**
+- `storage` (ChromeStorage): Storage instance
+
+#### Methods
+
+##### `async init()`
+Initializes greeting module, loads quote batch, and displays first quote.
+
+**Returns:** Promise<void>
+
+##### `updateGreeting()`
+Updates greeting based on current time, day of week, and minute.
+
+**Returns:** void
+
+```javascript
+greetingModule.updateGreeting();
+```
+
+##### `getHourlyGreeting(hour, index)`
+Gets a casual greeting for weekdays.
+
+**Parameters:**
+- `hour` (number): Hour of day (0-23)
+- `index` (number): Greeting index (0-9)
+
+**Returns:** string - Greeting message
+
+##### `getWeekendGreeting(hour, index)`
+Gets a weekend-specific greeting.
+
+**Parameters:**
+- `hour` (number): Hour of day (0-23)
+- `index` (number): Greeting index (0-9)
+
+**Returns:** string - Weekend greeting message
+
+##### `async loadQuoteBatch()`
+Loads quote batch from cache or API.
+
+**Returns:** Promise<void>
+
+##### `async fetchQuoteBatch()`
+Fetches 20 quotes from DummyJSON API in parallel.
+
+**Returns:** Promise<void>
+
+##### `showNextQuote()`
+Displays next quote from batch and triggers auto-refetch if needed.
+
+**Returns:** void
+
+##### `displayQuote(text, author)`
+Displays a quote on the page.
+
+**Parameters:**
+- `text` (string): Quote text
+- `author` (string): Quote author
+
+**Returns:** void
+
+##### `async cacheBatch()`
+Saves current quote batch to Chrome storage.
+
+**Returns:** Promise<void>
+
+##### `async loadCachedBatch()`
+Loads cached quote batch from storage.
+
+**Returns:** Promise<Object|null> - Cached batch data or null
+
+##### `refreshQuote()`
+Manually shows next quote in batch.
+
+**Returns:** void
+
+##### `destroy()`
+Cleans up timers and resources.
+
+**Returns:** void
+
+### SearchModule
+
+Manages multi-engine search with keyboard shortcuts.
+
+#### Constructor
+```javascript
+const search = new SearchModule();
+```
+
+#### Methods
+
+##### `init()`
+Initializes search module and event listeners.
+
+**Returns:** void
+
+##### `selectEngine(engine)`
+Selects a search engine and displays tag.
+
+**Parameters:**
+- `engine` (Object): Engine object from SEARCH_ENGINES
+
+**Returns:** void
+
+```javascript
+searchModule.selectEngine(Constants.SEARCH_ENGINES.google);
+```
+
+##### `clearSelection()`
+Clears currently selected search engine.
+
+**Returns:** void
+
+##### `renderTag(engine)`
+Renders visual tag for selected engine.
+
+**Parameters:**
+- `engine` (Object): Engine object
+
+**Returns:** void
+
+##### `handleKeyDown(e)`
+Handles keyboard shortcuts (Tab, Escape).
+
+**Parameters:**
+- `e` (KeyboardEvent): Keyboard event
+
+**Returns:** void
+
+##### `handleSubmit(e)`
+Handles search form submission.
+
+**Parameters:**
+- `e` (Event): Submit event
+
+**Returns:** void
+
+##### `toggleHelpModal()`
+Shows or hides the help modal.
+
+**Returns:** void
+
+##### `populateShortcuts()`
+Populates help modal with search engine shortcuts.
+
+**Returns:** void
+
 ---
 
 ## Utility Functions
@@ -598,6 +755,34 @@ Creates a deep copy of an object.
 }
 ```
 
+### Quote Batch Object
+```javascript
+{
+    quotes: Array,        // Array of quote objects
+    currentIndex: number, // Current position in batch
+    timestamp: number     // Last fetch timestamp
+}
+```
+
+### Quote Object
+```javascript
+{
+    text: string,    // Quote text
+    author: string   // Quote author
+}
+```
+
+### Search Engine Object
+```javascript
+{
+    name: string,       // Engine display name (e.g., "Google")
+    shortcut: string,   // Keyboard shortcut (e.g., "g")
+    url: string,        // Search URL template
+    color: string,      // Tag color (hex)
+    isDefault: boolean  // Whether this is the default engine (optional)
+}
+```
+
 ## Events
 
 The application uses standard DOM events for user interactions:
@@ -622,5 +807,12 @@ All async operations include try-catch blocks and appropriate error logging. The
 - **Debouncing**: User input is debounced to prevent excessive operations
 - **Lazy Loading**: Heavy operations are deferred until needed
 - **Caching**: Data is cached locally to reduce API calls
+  - Quote batches cached in Chrome storage (20 quotes per batch)
+  - News articles cached for 1 hour
+  - Weather data cached for 10 minutes
 - **Background Sync**: Synchronization happens in background threads
 - **Event Delegation**: Uses event delegation for dynamic content
+- **Conditional Module Loading**: Modules only initialize if their widgets are visible
+- **Resource Optimization**: Hidden widgets don't load or consume resources
+- **No Animations**: Removed fade-in animations for instant display
+- **Batch API Requests**: Quotes fetched in parallel (20 simultaneous requests)
