@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iNewTab - Transform Your New Tab Experience</title>
+    <meta name="description" content="A beautiful, productivity-focused Chrome extension with Google Tasks sync, smart greetings, and customizable features. No middle server - your data stays secure.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <span class="material-icons">tab</span>
+                <span class="brand-name">iNewTab</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#security">Security</a>
+                <a href="#opensource">Open Source</a>
+                <a href="#faq">FAQ</a>
+                <a href="#contact">Contact</a>
+                <a href="https://github.com/iinaveedahmed/iNewTab-chrome-extension" target="_blank" class="btn-secondary">
+                    <span class="material-icons">code</span>
+                    GitHub
+                </a>
+                <a href="#" class="btn-primary">
+                    <span class="material-icons">download</span>
+                    Install Extension
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Transform Your New Tab Into a <span class="gradient-text">Productivity Hub</span></h1>
+                <p class="hero-subtitle">A beautiful Chrome extension with Google Tasks sync, smart greetings, multi-engine search, and customizable widgets. Your data stays secure with direct OAuth - no middle server.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn-primary btn-large">
+                        <span class="material-icons">download</span>
+                        Get Started Free
+                    </a>
+                    <a href="https://github.com/iinaveedahmed/iNewTab-chrome-extension" target="_blank" class="btn-outline btn-large">
+                        <span class="material-icons">visibility</span>
+                        View on GitHub
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="material-icons">security</span>
+                        <div>
+                            <strong>100% Secure</strong>
+                            <p>No middle server</p>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <span class="material-icons">code</span>
+                        <div>
+                            <strong>Open Source</strong>
+                            <p>MIT License</p>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <span class="material-icons">sync</span>
+                        <div>
+                            <strong>Real-time Sync</strong>
+                            <p>Google Tasks API</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="mockup-browser">
+                    <div class="browser-header">
+                        <div class="browser-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <div class="browser-address">New Tab</div>
+                    </div>
+                    <div class="browser-content">
+                        <div class="demo-card">
+                            <div class="demo-greeting">Good Morning! ☀️</div>
+                            <div class="demo-quote">"Success is not final, failure is not fatal: it is the courage to continue that counts."</div>
+                            <div class="demo-search">
+                                <span class="material-icons">search</span>
+                                <input type="text" placeholder="Search with Perplexity, Google, ChatGPT..." readonly>
+                            </div>
+                            <div class="demo-tasks">
+                                <div class="demo-task">
+                                    <input type="checkbox">
+                                    <span>Review pull requests</span>
+                                </div>
+                                <div class="demo-task">
+                                    <input type="checkbox">
+                                    <span>Update documentation</span>
+                                </div>
+                                <div class="demo-task">
+                                    <input type="checkbox" checked>
+                                    <span>Deploy new features</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Google Tasks Sync Section -->
+    <section id="google-sync" class="section bg-gradient">
+        <div class="container">
+            <div class="section-header">
+                <span class="material-icons section-icon">sync</span>
+                <h2>Seamless Google Tasks Integration</h2>
+                <p>Bidirectional sync with your Google Tasks. No compromises, no middle server.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">list</span>
+                    </div>
+                    <h3>Multi-List Support</h3>
+                    <p>Switch between different Google Task Lists seamlessly. All your lists, perfectly organized.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">swap_vert</span>
+                    </div>
+                    <h3>Position Syncing</h3>
+                    <p>Drag and drop to reorder tasks. Your custom order syncs back to Google Tasks automatically.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">access_time</span>
+                    </div>
+                    <h3>Real-time Updates</h3>
+                    <p>Automatic background sync every 5 minutes. See your last sync time and connection status.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">cloud_off</span>
+                    </div>
+                    <h3>Offline Support</h3>
+                    <p>Work offline with Chrome storage. Your tasks sync when you're back online.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">done_all</span>
+                    </div>
+                    <h3>Completed Tasks</h3>
+                    <p>Collapsible section for completed tasks. Keep your workspace clean and focused.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">format_list_numbered</span>
+                    </div>
+                    <h3>Native Ordering</h3>
+                    <p>Uses the same sorting logic as Google Tasks. New tasks appear at the top, respecting due dates.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Section -->
+    <section id="security" class="section">
+        <div class="container">
+            <div class="two-column">
+                <div class="column">
+                    <span class="material-icons section-icon-large">security</span>
+                    <h2>Your Privacy is Our Priority</h2>
+                    <p class="lead">Unlike other extensions, iNewTab connects directly to Google using OAuth 2.0. No middle server, no data collection, no tracking.</p>
+                    <div class="security-features">
+                        <div class="security-item">
+                            <span class="material-icons">verified_user</span>
+                            <div>
+                                <h4>OAuth 2.0 Authentication</h4>
+                                <p>Direct connection to Google APIs. Your credentials never pass through our servers.</p>
+                            </div>
+                        </div>
+                        <div class="security-item">
+                            <span class="material-icons">shield</span>
+                            <div>
+                                <h4>XSS Prevention</h4>
+                                <p>All user content is properly escaped. Content Security Policy enforced.</p>
+                            </div>
+                        </div>
+                        <div class="security-item">
+                            <span class="material-icons">https</span>
+                            <div>
+                                <h4>HTTPS Only</h4>
+                                <p>All API calls use secure connections. Your data is encrypted in transit.</p>
+                            </div>
+                        </div>
+                        <div class="security-item">
+                            <span class="material-icons">lock</span>
+                            <div>
+                                <h4>Minimal Permissions</h4>
+                                <p>Only requests necessary Chrome permissions. No access to browsing history or sensitive data.</p>
+                            </div>
+                        </div>
+                        <div class="security-item">
+                            <span class="material-icons">storage</span>
+                            <div>
+                                <h4>Local Storage Only</h4>
+                                <p>All data stored locally in Chrome storage. Nothing is sent to external servers.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="security-visual">
+                        <div class="security-diagram">
+                            <div class="diagram-node user">
+                                <span class="material-icons">person</span>
+                                <p>You</p>
+                            </div>
+                            <div class="diagram-arrow">
+                                <div class="arrow-line"></div>
+                                <span>OAuth 2.0</span>
+                            </div>
+                            <div class="diagram-node google">
+                                <span class="material-icons">cloud</span>
+                                <p>Google APIs</p>
+                            </div>
+                            <div class="diagram-note">
+                                <span class="material-icons">block</span>
+                                <p>NO Middle Server</p>
+                            </div>
+                        </div>
+                        <div class="security-badges">
+                            <div class="badge">
+                                <span class="material-icons">verified</span>
+                                <p>Open Source</p>
+                            </div>
+                            <div class="badge">
+                                <span class="material-icons">privacy_tip</span>
+                                <p>Privacy First</p>
+                            </div>
+                            <div class="badge">
+                                <span class="material-icons">code</span>
+                                <p>Auditable Code</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Open Source Section -->
+    <section id="opensource" class="section bg-dark">
+        <div class="container">
+            <div class="section-header">
+                <span class="material-icons section-icon">code</span>
+                <h2>Built in the Open</h2>
+                <p>Free, open source, and transparent. Contribute, audit, or fork - it's your choice.</p>
+            </div>
+            <div class="opensource-content">
+                <div class="opensource-card">
+                    <span class="material-icons">description</span>
+                    <h3>MIT License</h3>
+                    <p>Free to use, modify, and distribute. No restrictions, no hidden costs.</p>
+                </div>
+                <div class="opensource-card">
+                    <span class="material-icons">code</span>
+                    <h3>Full Source Code</h3>
+                    <p>Every line of code is available on GitHub. Audit our security practices yourself.</p>
+                </div>
+                <div class="opensource-card">
+                    <span class="material-icons">groups</span>
+                    <h3>Community Driven</h3>
+                    <p>Contributions welcome! Report issues, suggest features, or submit pull requests.</p>
+                </div>
+            </div>
+            <div class="github-stats">
+                <a href="https://github.com/iinaveedahmed/iNewTab-chrome-extension" target="_blank" class="btn-primary btn-large">
+                    <span class="material-icons">code</span>
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Other Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="material-icons section-icon">star</span>
+                <h2>Packed with Features</h2>
+                <p>Everything you need for a productive new tab experience.</p>
+            </div>
+            <div class="features-showcase">
+                <div class="showcase-item">
+                    <div class="showcase-icon">
+                        <span class="material-icons">search</span>
+                    </div>
+                    <div class="showcase-content">
+                        <h3>Multi-Engine Smart Search</h3>
+                        <p>8 popular search engines with keyboard shortcuts. Type <code>g + Tab</code> for Google, <code>c + Tab</code> for ChatGPT, and more.</p>
+                        <ul>
+                            <li>Perplexity (default), Google, ChatGPT, DuckDuckGo, Bing</li>
+                            <li>YouTube, GitHub, Stack Overflow</li>
+                            <li>Visual engine tags and quick shortcuts</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="showcase-item">
+                    <div class="showcase-icon">
+                        <span class="material-icons">wb_sunny</span>
+                    </div>
+                    <div class="showcase-content">
+                        <h3>Smart Greetings & Quotes</h3>
+                        <p>240 casual greetings that change based on time of day and weekend. Inspirational quotes fetched from DummyJSON API.</p>
+                        <ul>
+                            <li>10 unique greetings for each hour of the day</li>
+                            <li>Weekend-specific messages for Saturdays and Sundays</li>
+                            <li>Auto-cycling greetings every ~6 minutes</li>
+                            <li>Quote batch system with 20 cached quotes</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="showcase-item">
+                    <div class="showcase-icon">
+                        <span class="material-icons">cloud</span>
+                    </div>
+                    <div class="showcase-content">
+                        <h3>Weather Widget</h3>
+                        <p>Location-based weather updates with automatic refresh every 10 minutes.</p>
+                        <ul>
+                            <li>Current temperature and conditions</li>
+                            <li>Powered by Open-Meteo API</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="showcase-item">
+                    <div class="showcase-icon">
+                        <span class="material-icons">visibility</span>
+                    </div>
+                    <div class="showcase-content">
+                        <h3>Customization & Visibility</h3>
+                        <p>Show or hide any widget to create your perfect dashboard.</p>
+                        <ul>
+                            <li>Toggle visibility for greeting, quote, clock, search, tasks, weather, news</li>
+                            <li>Settings hover reveal - icon appears only when needed</li>
+                            <li>Hidden widgets don't load or consume resources</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="showcase-item">
+                    <div class="showcase-icon">
+                        <span class="material-icons">palette</span>
+                    </div>
+                    <div class="showcase-content">
+                        <h3>Modern UI Design</h3>
+                        <p>Beautiful interface with Material Design standards.</p>
+                        <ul>
+                            <li>Dark/Light theme support</li>
+                            <li>Smooth animations and transitions</li>
+                            <li>Material Icons and Inter font</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RSS Feed Section -->
+    <section id="rss" class="section bg-gradient">
+        <div class="container">
+            <div class="two-column">
+                <div class="column">
+                    <div class="coming-soon-badge">
+                        <span class="material-icons">schedule</span>
+                        <span>Enhanced Version Coming Soon</span>
+                    </div>
+                    <h2>Better RSS Feed Experience</h2>
+                    <p class="lead">Currently available with plans for major improvements:</p>
+                    <div class="feature-list">
+                        <div class="feature-list-item current">
+                            <span class="material-icons">check_circle</span>
+                            <div>
+                                <h4>Current Features</h4>
+                                <ul>
+                                    <li>Customizable RSS feeds through settings</li>
+                                    <li>Scrolling news ticker with real-time updates</li>
+                                    <li>Cached news for offline viewing</li>
+                                    <li>Clickable news items that open in new tabs</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="feature-list-item upcoming">
+                            <span class="material-icons">upcoming</span>
+                            <div>
+                                <h4>Coming Soon</h4>
+                                <ul>
+                                    <li>Multiple feed sources with categorization</li>
+                                    <li>Advanced filtering and search</li>
+                                    <li>Read/unread tracking</li>
+                                    <li>Customizable layout options</li>
+                                    <li>Save articles for later</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="rss-visual">
+                        <div class="news-mockup">
+                            <div class="news-header">
+                                <span class="material-icons">newspaper</span>
+                                <h4>Latest News</h4>
+                            </div>
+                            <div class="news-items">
+                                <div class="news-item">
+                                    <div class="news-dot"></div>
+                                    <p>New Chrome extension API updates released...</p>
+                                </div>
+                                <div class="news-item">
+                                    <div class="news-dot"></div>
+                                    <p>Google Tasks introduces new productivity features...</p>
+                                </div>
+                                <div class="news-item">
+                                    <div class="news-dot"></div>
+                                    <p>Material Design 3 guidelines updated...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="material-icons section-icon">help</span>
+                <h2>Frequently Asked Questions</h2>
+            </div>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>How does iNewTab sync with Google Tasks?</h3>
+                    <p>iNewTab uses OAuth 2.0 to connect directly to Google Tasks API. There's no middle server - your data flows securely between your browser and Google's servers. Syncing happens automatically every 5 minutes, and you can also manually sync anytime.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Is my data secure?</h3>
+                    <p>Absolutely! Your data never passes through our servers. All communication happens directly between your browser and Google using OAuth 2.0. Data is stored locally in Chrome storage and only syncs with your Google account.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can I use this extension offline?</h3>
+                    <p>Yes! All your tasks and settings are stored locally in Chrome storage. You can view and edit tasks offline, and they'll automatically sync with Google Tasks when you're back online.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>How do I switch between different Google Task Lists?</h3>
+                    <p>Open Settings → Google tab, and you'll see a dropdown with all your Google Task Lists. Select the list you want to display, and it will immediately load those tasks.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Does drag-and-drop reordering sync with Google Tasks?</h3>
+                    <p>Yes! When you reorder tasks using drag-and-drop, the new order syncs back to Google Tasks using the native position-based API, ensuring consistency across all your devices.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What permissions does the extension need?</h3>
+                    <p>iNewTab only requests the minimum necessary permissions: storage (for local data), identity (for OAuth), and Google Tasks API scope. We never request access to browsing history or other sensitive data.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>How do I customize which widgets are visible?</h3>
+                    <p>Hover over the top-right corner to reveal the settings icon. In settings, you can toggle visibility for greeting, quote, clock, search, tasks, weather, and news widgets. Hidden widgets don't load or consume resources.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can I add my own RSS feeds?</h3>
+                    <p>Yes! Go to Settings → News tab, where you can add or remove RSS feed URLs. Your custom feeds will be saved and used for the news ticker.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What search engines are supported?</h3>
+                    <p>iNewTab supports 8 search engines: Perplexity (default), Google, ChatGPT, DuckDuckGo, Bing, YouTube, GitHub, and Stack Overflow. Each has a keyboard shortcut (e.g., <code>g + Tab</code> for Google).</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Is iNewTab really free?</h3>
+                    <p>Yes, 100% free! iNewTab is open source under the MIT License. There are no premium features, no subscriptions, and no hidden costs. You can even fork it and customize it for your needs.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>How do I contribute to the project?</h3>
+                    <p>We welcome contributions! Visit our GitHub repository, fork the project, make your changes, and submit a pull request. You can also report issues or suggest features.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What browsers are supported?</h3>
+                    <p>iNewTab works on Chrome 88+, Edge 88+ (Chromium-based), Brave Browser, and any Chromium-based browser with extension support.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section bg-dark">
+        <div class="container">
+            <div class="section-header">
+                <span class="material-icons section-icon">mail</span>
+                <h2>Get in Touch</h2>
+                <p>Have questions, feedback, or suggestions? We'd love to hear from you!</p>
+            </div>
+            <div class="contact-grid">
+                <a href="https://github.com/iinaveedahmed/iNewTab-chrome-extension/issues" target="_blank" class="contact-card">
+                    <span class="material-icons">bug_report</span>
+                    <h3>Report an Issue</h3>
+                    <p>Found a bug? Report it on GitHub Issues</p>
+                </a>
+                <a href="https://github.com/iinaveedahmed/iNewTab-chrome-extension/discussions" target="_blank" class="contact-card">
+                    <span class="material-icons">forum</span>
+                    <h3>Join Discussions</h3>
+                    <p>Share ideas and feedback on GitHub Discussions</p>
+                </a>
+                <a href="https://github.com/iinaveedahmed/iNewTab-chrome-extension" target="_blank" class="contact-card">
+                    <span class="material-icons">code</span>
+                    <h3>Contribute</h3>
+                    <p>Submit pull requests and help improve iNewTab</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="brand-name-footer">
+                        <span class="material-icons">tab</span>
+                        <span>iNewTab</span>
+                    </div>
+                    <p>Transform your new tab into a productivity hub.</p>
+                    <div class="footer-social">
+                        <a href="https://github.com/iinaveedahmed/iNewTab-chrome-extension" target="_blank">
+                            <span class="material-icons">code</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <a href="#features">Features</a>
+                        <a href="#google-sync">Google Tasks</a>
+                        <a href="#security">Security</a>
+                        <a href="#opensource">Open Source</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <a href="https://github.com/iinaveedahmed/iNewTab-chrome-extension/blob/main/docs/SETUP.md" target="_blank">Documentation</a>
+                        <a href="#faq">FAQ</a>
+                        <a href="https://github.com/iinaveedahmed/iNewTab-chrome-extension" target="_blank">GitHub</a>
+                        <a href="#contact">Contact</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <a href="privacy.html">Privacy Policy</a>
+                        <a href="terms.html">Terms of Service</a>
+                        <a href="https://github.com/iinaveedahmed/iNewTab-chrome-extension/blob/main/LICENSE" target="_blank">License (MIT)</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 iNewTab. Released under the MIT License. Built with ❤️ for productivity.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
